@@ -1,0 +1,28 @@
+*{box-sizing:border-box}
+:root{--bg:#f6f7fa;--surface:#fff;--ink:#16202f;--muted:#566073;--line:#dde2ea;--accent:#2447a8;--accent-ink:#fff}
+@media (prefers-color-scheme:dark){:root{--bg:#0f141c;--surface:#171e29;--ink:#e8ecf3;--muted:#a3afc1;--line:#2a3342;--accent:#8fb0ff;--accent-ink:#0f141c}}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:0 16px 56px}
+.top{max-width:720px;margin:0 auto;padding:16px 0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.top a{color:var(--ink);text-decoration:none;font-weight:700}
+.top .app{background:var(--accent);color:var(--accent-ink);padding:8px 14px;border-radius:10px;font-weight:600;font-size:.9rem}
+main{max-width:720px;margin:0 auto}
+h1{font-size:1.9rem;line-height:1.25;margin:12px 0 6px}
+h2{font-size:1.3rem;margin:32px 0 8px;line-height:1.3}
+p,li{margin:0 0 14px}
+ul,ol{padding-left:22px}
+.meta{color:var(--muted);font-size:.88rem;margin-bottom:22px}
+a{color:var(--accent)}
+table{border-collapse:collapse;width:100%;margin:8px 0 18px;font-size:.95rem}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left}
+th{background:var(--surface)}
+.cta{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;margin:30px 0}
+.cta h2{margin:0 0 6px;font-size:1.1rem}
+.cta a.btn{display:inline-block;background:var(--accent);color:var(--accent-ink);padding:9px 16px;border-radius:10px;font-weight:600;text-decoration:none}
+.note{color:var(--muted);font-size:.88rem}
+.cards{display:grid;gap:12px;margin-top:18px}
+.card{display:block;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;text-decoration:none;color:var(--ink)}
+.card b{display:block;margin-bottom:4px;color:var(--accent)}
+.card span{color:var(--muted);font-size:.95rem}
+.related{margin-top:28px}
+footer{max-width:720px;margin:36px auto 0;color:var(--muted);font-size:.85rem;text-align:center}
+footer a{color:var(--muted)}

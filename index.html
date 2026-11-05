@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="stylesheet" href="styles.css?v=9.35.0">
+<title>Easy Budget Tracker: Free Monthly Budget Planner and Expense Tracker</title>
+<meta name="description" content="Plan your month in minutes. Free budget tracker with bill reminders, spending limits, savings goals and a what-if savings calculator. Private by design: your budget stays in your browser.">
+<link rel="canonical" href="https://ezbudgettracker.app/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Easy Budget Tracker">
+<meta property="og:title" content="Easy Budget Tracker: Free Monthly Budget Planner">
+<meta property="og:description" content="Plan income, bills, spending, savings and loans month by month. Free and private.">
+<meta property="og:url" content="https://ezbudgettracker.app/">
+<meta property="og:image" content="https://ezbudgettracker.app/icons/icon-512.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Easy Budget Tracker","url":"https://ezbudgettracker.app/","applicationCategory":"FinanceApplication","operatingSystem":"Any","description":"A free monthly budget planner with bill reminders, spending limits and a savings calculator.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<script>try{var __t=localStorage.getItem("ebt.theme");if(__t)document.documentElement.setAttribute("data-theme",__t)}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600&display=swap">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f141c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Budget">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+</head><body>
+
+<div class="shell">
+<aside class="side" aria-label="Main menu"><div class="side-brand"><img src="icons/icon-192.png" alt="" width="36" height="36"><span>Easy Budget Tracker</span></div><nav class="side-nav" aria-label="Pages"><a href="#/" data-nav data-v="budget"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Budget</span></a><a href="#/transactions" data-nav data-v="tx"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 12l4 4-4 4"/><path d="M21 16H7"/></svg><span>Transactions</span></a><a href="#/notebook" data-nav data-v="notebook"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a2 2 0 012 2v14H7a2 2 0 01-2-2z"/><path d="M5 18a2 2 0 012-2h11M9 8h5"/></svg><span>Notebook</span></a><a href="#/collectibles" data-nav data-v="collect"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-1.9-.4-2.5-1.2M12 6.5V8m0 8v1.5"/></svg><span>Collectibles</span></a><a href="#/groceries" data-nav data-v="grocery"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 001 .8h8.9a1 1 0 001-.8L20 7H6"/></svg><span>Groceries</span></a><a href="#/insights" data-nav data-v="insights"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/></svg><span>Insights</span></a><a href="#/reports" data-nav data-v="reports"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Reports</span></a><a href="#/help" data-nav data-v="help"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01"/></svg><span>How to use</span></a><div class="side-sep"></div><button type="button" data-act="settings" data-scroll><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button></nav><div class="side-foot"><button type="button" class="darkbtn" data-dark><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg><span>Dark mode</span></button></div></aside>
+<div class="wrap" id="app">
+  <header class="top">
+    <h1 class="brand"><img class="logo" src="icons/icon-192.png" alt="" width="30" height="30">Easy Budget Tracker</h1>
+    <div class="nav" role="group" aria-label="Choose month">
+      <button class="ibtn" data-act="prev" aria-label="Previous month">‹</button>
+      <div class="month" id="monthLabel" aria-live="polite"></div>
+      <button class="ibtn" data-act="next" aria-label="Next month">›</button>
+    </div>
+    <div class="tools">
+      <button class="tbtn" data-act="today" id="todayBtn" hidden>This month</button>
+      <button class="tbtn" data-act="gbtn" id="gBtn" hidden>Sign in with Google</button>
+      <button class="tbtn" data-act="gsync" id="gSyncBtn" hidden aria-label="Sync with Google Drive">&#8635; Sync</button>
+      <button class="tbtn avatar" data-act="settings" id="setBtn" aria-expanded="false" aria-controls="settings" aria-label="Settings"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
+    </div>
+  </header>
+
+  <section id="settings" class="settings" hidden></section>
+  <section id="nbModal" class="settings" hidden></section>
+  <div id="dash">
+  <div id="dueBanner"></div>
+  <div id="notice"></div>
+  <section class="hero" id="hero" aria-label="Remaining balance"></section>
+  <section class="stripcard" aria-label="Year at a glance"><p class="striplbl" id="stripLbl"></p><div class="strip" id="strip"></div></section>
+  <div class="foldbar" id="foldbar"></div>
+  <section class="grid" id="sections"></section>
+  <section class="recent" id="recent" aria-label="Recent transactions"></section>
+  <section class="about" aria-labelledby="can-h">
+    <h2 id="can-h">What you can do with Easy Budget Tracker</h2>
+    <ul>
+      <li><b>Plan each month:</b> add income, bills, spending, savings, credit cards and loans, and see your remaining balance at a glance.</li>
+      <li><b>Repeating bills:</b> enter a bill once and change only the months that differ.</li>
+      <li><b>Budget Notebook:</b> keep a page for each trip or project with its own budget, categories and items, and see if you are on track.</li>
+      <li><b>Due-date reminders:</b> set a due day on a credit card or a collectible, see a banner before it is due, and add card due dates to your phone calendar.</li>
+      <li><b>Spending limits:</b> set an overall limit and limits for each spending category, with a warning as you near them.</li>
+      <li><b>Savings goals and a what-if savings calculator:</b> see what saving a little extra each month adds up to, and how long a savings target will take.</li>
+      <li><b>Track money owed to you</b> and plan shopping with a grocery list that has its own spending limit.</li>
+      <li><b>Private backup:</b> your budget stays in your browser. Export to Excel or CSV, or sign in with Google to keep a copy in your own Drive.</li>
+    </ul>
+  </section>
+  <section class="about" aria-labelledby="about-h">
+    <h2 id="about-h">A simple monthly budget planner</h2>
+    <p>Easy Budget Tracker helps you see where your money goes each month. Add your income, bills, spending, savings, credit cards and loans, set limits, and check what is left. Bills can repeat every month, and you only change the months that differ. Your budget is saved in your own browser, and you can back it up or sign in with Google to keep a copy in your own Drive.</p>
+    <nav aria-label="Budgeting guides"><b>Budgeting guides:</b>
+      <a href="guides/budget-20000-salary-philippines.html">Budget a ₱20,000 salary</a>
+      <a href="guides/50-30-20-rule.html">The 50/30/20 rule</a>
+      <a href="guides/monthly-bills-checklist.html">Monthly bills checklist</a>
+      <a href="guides/emergency-fund.html">Build an emergency fund</a>
+      <a href="guides/pay-off-credit-card-debt.html">Pay off credit card debt</a>
+      <a href="guides/track-expenses-beginners.html">Track expenses as a beginner</a>
+    </nav>
+  </section>
+  </div>
+  <div id="pgTx" class="pg wide" hidden></div>
+  <div id="pgReports" class="pg wide" hidden></div>
+  <div id="pgNotebook" class="pg" hidden></div>
+  <div id="pgCollect" class="pg" hidden></div>
+  <div id="pgGrocery" class="pg" hidden></div>
+  <div id="pgInsights" class="pg" hidden><header class="pg-head"><div class="pg-eye">Your numbers</div><h2>Insights</h2></header><section class="insights" id="insights" aria-label="Suggestions, budget limits and savings planner"></section></div>
+  <div id="pgHelp" class="pg" hidden></div>
+  <p class="foot" id="foot"></p>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <p class="foot"><a href="guides/">Guides</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+</div>
+</div>
+<nav class="tabbar" aria-label="Bottom tabs"><a href="#/" data-nav data-v="budget"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg><span>Budget</span></a><a href="#/transactions" data-nav data-v="tx"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4L3 8l4 4"/><path d="M3 8h14"/><path d="M17 12l4 4-4 4"/><path d="M21 16H7"/></svg><span>Transactions</span></a><a href="#/notebook" data-nav data-v="notebook"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11a2 2 0 012 2v14H7a2 2 0 01-2-2z"/><path d="M5 18a2 2 0 012-2h11M9 8h5"/></svg><span>Notebook</span></a><a href="#/collectibles" data-nav data-v="collect"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.5 9.2c-.6-.8-1.5-1.2-2.5-1.2-1.4 0-2.5.8-2.5 2s1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-1.9-.4-2.5-1.2M12 6.5V8m0 8v1.5"/></svg><span>Collectibles</span></a><button type="button" data-more aria-haspopup="true" aria-label="More pages"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg><span>More</span></button></nav>
+<div class="sheet" id="moreSheet" hidden><div class="sheet-in" role="menu"><div class="grab"></div><a href="#/groceries" data-nav data-v="grocery"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.7 12.4a1 1 0 001 .8h8.9a1 1 0 001-.8L20 7H6"/></svg><span>Groceries</span></a><a href="#/insights" data-nav data-v="insights"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 00-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0012 3z"/></svg><span>Insights</span></a><a href="#/reports" data-nav data-v="reports"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V10M12 20V4M19 20v-7"/></svg><span>Reports</span></a><a href="#/help" data-nav data-v="help"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-.9.6-1.5 1.1-1.5 2.2M12 17h.01"/></svg><span>How to use</span></a><button type="button" data-act="settings" data-scroll><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg><span>Settings</span></button><button type="button" data-dark><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg><span>Dark mode</span></button></div></div>
+<dialog id="impDlg" class="impdlg" aria-label="Import from Excel or CSV"></dialog>
+<datalist id="s-income"><option value="Salary"><option value="Side income"><option value="Allowance"><option value="Business income"><option value="Pension"></datalist>
+<datalist id="s-bill"><option value="Rent / mortgage"><option value="Electricity"><option value="Water"><option value="Internet"><option value="Phone"><option value="Insurance"><option value="Streaming"><option value="Tuition"></datalist>
+<datalist id="s-spend"><option value="Groceries"><option value="Transport"><option value="Eating out"><option value="Health"><option value="Shopping"><option value="Fun"><option value="Gifts"></datalist>
+<datalist id="s-saving"><option value="Emergency fund"><option value="Retirement"><option value="Travel fund"><option value="Investments"></datalist>
+<datalist id="s-card"><option value="BDO card"><option value="BPI card"><option value="Metrobank card"><option value="Security Bank card"><option value="UnionBank card"></datalist>
+
+<script defer src="js/storage.js?v=9.35.0"></script>
+<script defer src="js/calc.js?v=9.35.0"></script>
+<script defer src="js/budget.js?v=9.35.0"></script>
+<script defer src="js/google-sync.js?v=9.35.0"></script>
+<script defer src="js/import-export.js?v=9.35.0"></script>
+<script defer src="js/routing.js?v=9.35.0"></script>
+<script defer src="js/transactions.js?v=9.35.0"></script>
+<script defer src="js/reports.js?v=9.35.0"></script>
+<script defer src="js/navigation.js?v=9.35.0"></script>
+<script defer src="js/collectibles.js?v=9.35.0"></script>
+<script defer src="js/help.js?v=9.35.0"></script>
+<script defer src="js/groceries.js?v=9.35.0"></script>
+<script defer src="js/notebook.js?v=9.35.0"></script>
+<script defer src="js/boot.js?v=9.35.0"></script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+</script>
+</body></html>
