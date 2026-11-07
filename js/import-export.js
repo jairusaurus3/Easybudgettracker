@@ -232,7 +232,7 @@ function parseCSV(text){
 
 /* --- understand amounts, dates and month headings --- */
 function pf(v){if(amtBadChars(v))return NaN;var n=parseAmt(v);return n===null?NaN:n}
-var AMT_MAX=1e9;
+var AMT_MAX=1e12;
 function amtClamp(n){return n>AMT_MAX?AMT_MAX:n<-AMT_MAX?-AMT_MAX:n}
 /* v9.29: typed text may contain only digits, . , spaces, a currency symbol, one sign (leading or trailing) or ( ) around the number.
    Anything else (2+3, 0x1F, 12abc, 1-2) is rejected instead of being quietly turned into a different number.

@@ -466,7 +466,7 @@ button{cursor:pointer}
 .ph .tot{font-weight:600}
 .row{border-bottom:1px solid var(--line)}
 .row:last-of-type{border-bottom:0}
-.line{display:grid;grid-template-columns:minmax(0,1fr) 9.5rem;gap:10px;align-items:center;padding:8px 16px}
+.line{display:grid;grid-template-columns:minmax(0,1fr) 8rem;gap:10px;align-items:center;padding:8px 16px}
 .nm{background:none;border:0;text-align:left;padding:6px 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .nm:hover{color:var(--accent)}
 .nmw{display:flex;align-items:center;gap:8px;min-width:0}
@@ -474,12 +474,14 @@ button{cursor:pointer}
 .paybtn{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:4px 10px;font-size:.76rem;font-weight:600;min-height:30px;white-space:nowrap}
 .paybtn:hover{border-color:var(--accent);color:var(--accent)}
 .paybtn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink,#fff)}
-@media (max-width:420px){.nmw{flex-wrap:wrap;gap:0 8px}.nmw .nm{flex:1 1 100%;padding-bottom:2px}.paybtn{margin-bottom:6px}}
+@media (max-width:420px){.nmw{gap:6px}}
 .nm small{color:var(--muted);font-weight:400;margin-left:6px}
 .nm .dt{color:var(--muted);font-weight:400;font-size:.8rem;margin-left:8px;white-space:nowrap}
 .amt{width:100%;text-align:right;border:1px solid transparent;background:var(--field);border-radius:8px;padding:7px 10px}
 .amt:hover{border-color:var(--line)}
 .amt:focus{border-color:var(--accent);outline:none}
+/* while editing, the amount box grows to the left so the full digits are readable */
+.line .amt:not([readonly]):focus{position:relative;z-index:3;width:calc(100% + 5.5rem);margin-left:-5.5rem;box-shadow:0 0 0 3px var(--accent-soft,rgba(120,150,255,.25))}
 .amt[readonly]{background:none;font-weight:600}
 .edited{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c-spend);margin-left:6px;vertical-align:middle}
 .sub2{padding:0 16px 10px;font-size:.82rem;color:var(--muted)}
@@ -722,7 +724,7 @@ body:not([data-view="budget"]):not([data-view="collect"]):not([data-view="insigh
 
 @media (max-width:560px){
   .hero{padding:18px 16px}
-  .line{grid-template-columns:minmax(0,1fr) 8rem;padding-inline:12px}
+  .line{grid-template-columns:minmax(0,1fr) 7.75rem;padding-inline:12px}
   .ph,.add,.empty,.sub2,.edit{padding-inline:12px}
   .strip{grid-template-columns:repeat(4,minmax(0,1fr))}
   .nm small{display:none}
@@ -962,7 +964,7 @@ button.txmain:hover{background:var(--field)}
 /* v9.29 narrow-phone pass (320px): no title/total collision, full amounts visible, calmer balance and tab labels */
 .panel .ph h2{display:flex;flex:1 0 auto;min-width:0}
 @media (max-width:420px){
-  .line{grid-template-columns:minmax(0,1fr) 9.25rem}
+  .line{grid-template-columns:minmax(0,1fr) 7.25rem}
   .amt{padding-inline:7px;font-size:.9rem}
   .hero .big.long{font-size:clamp(1.5rem,7.4vw,2.2rem)}
 }
@@ -1076,3 +1078,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]),select,textarea{font-size:16px}
   .amt,.amt.num{font-size:16px}
 }
+
+/* item sort bar (compact, same pill style as the Paid button) */
+.sortbar{display:flex;align-items:center;gap:6px;flex-wrap:nowrap;padding:6px 16px 0}
+.sortbar label{font-size:.72rem;color:var(--muted)}
+.sortsel{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:3px 8px;font:inherit;font-size:.76rem;font-weight:600;min-height:30px;max-width:9.5em}
+.sortdir{flex:none;border-radius:99px;padding:3px 10px;font-size:.76rem;font-weight:600;min-height:30px;white-space:nowrap}
+

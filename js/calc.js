@@ -96,6 +96,15 @@ function balance(m){
 
 /* ---------- formatting ---------- */
 function fmt(n){var neg=n<0&&Math.round(Math.abs(n)*100)>0;return (neg?'−':'')+esc(state.currency)+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
-function compact(n){var a=Math.abs(n),s;if(a>=1e6)s=(a/1e6).toFixed(1)+'M';else if(a>=1e3)s=(a/1e3).toFixed(1)+'k';else s=a.toFixed(0);return (n<0&&a>=0.5?'−':'')+esc(state.currency)+s}
+function compact(n){var a=Math.abs(n),s;if(a>=1e9)s=(a/1e9).toFixed(1)+'B';else if(a>=1e6)s=(a/1e6).toFixed(1)+'M';else if(a>=1e3)s=(a/1e3).toFixed(1)+'k';else s=a.toFixed(0);return (n<0&&a>=0.5?'−':'')+esc(state.currency)+s}
 function inputVal(n){return n?n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}):''}
+/* v9.38: amount boxes show 1.3M / 1.45B when not being edited (viewing). Clicking the box shows the full digits. */
+function amtShort(n){
+  var a=Math.abs(n);if(!(a>=1e6))return inputVal(n);
+  var v=Math.round(a/1e6*100)/100,u='M';
+  if(v>=1000){v=Math.round(a/1e9*100)/100;u='B'}
+  if(v>=1000){v=Math.round(a/1e12*100)/100;u='T'}
+  return (n<0?'-':'')+String(v)+u;
+}
+function isShortAmt(s){return /^-?[0-9.]+[MBT]$/.test(String(s))}
 

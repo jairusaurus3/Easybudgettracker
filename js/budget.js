@@ -251,7 +251,7 @@ function itemRow(K,it){
   var open=openId===it.id,h='<div class="row" data-id="'+it.id+'"><div class="line">'+
     '<div class="nmw"><button class="nm" data-act="toggle" data-id="'+it.id+'" aria-expanded="'+open+'" title="Edit details">'+(it.name?esc(it.name):'<span style="color:var(--muted)">Untitled</span>')+dtHTML(it)+
     (payKind(K.k)?(it.due?'<small>due '+ord(it.due)+'</small>':(K.k==='bill'&&it.repeat?'<small>every month</small>':'<small>set due day</small>')):(it.repeat?'<small>every month</small>':''))+(edited?'<span class="edited" title="Different from the usual amount this month"></span>':'')+'</button>'+(payKind(K.k)&&v>0&&needsPaid(it,cur)?payBtn(it):'')+'</div>'+
-    '<input class="amt num" inputmode="decimal" data-field="amt" data-id="'+it.id+'" value="'+inputVal(v)+'" placeholder="0.00" aria-label="'+esc(it.name||K.noun)+' amount for '+label(cur)+'"></div>';
+    '<input class="amt num" inputmode="decimal" data-field="amt" data-id="'+it.id+'" value="'+amtShort(v)+'" placeholder="0.00" aria-label="'+esc(it.name||K.noun)+' amount for '+label(cur)+'"></div>';
   if(payKind(K.k)&&v>0){h+='<div class="sub2">'+(needsPaid(it,cur)?(it.due?'Due on the '+ord(it.due):'Set a due day in the details')+' · '+((it.paid&&it.paid[cur])?'Paid · counted in your balance':'Not paid yet · not deducted'):'Earlier month · counted as paid')+'</div>'}
   if(open){
     h+='<div class="edit">'+
@@ -275,7 +275,7 @@ function loanRow(l){
   else if(n===l.term)st='Final payment · '+l.term+' of '+l.term;
   else st='Payment '+n+' of '+l.term+' · '+(l.term-n)+' left · ends '+short(last);
   var h='<div class="row" data-id="'+l.id+'"><div class="line"><div class="nmw"><button class="nm" data-act="toggle" data-id="'+l.id+'" aria-expanded="'+open+'" title="Edit details">'+(l.name?esc(l.name):'<span style="color:var(--muted)">Untitled</span>')+dtHTML(l)+(l.due?'<small>due '+ord(l.due)+'</small>':'')+'</button>'+(loanVal(l,cur)>0?payBtn(l):'')+'</div>'+
-    '<input class="amt num" readonly tabindex="-1" aria-label="'+esc(l.name)+' payment for '+label(cur)+'" value="'+inputVal(loanVal(l,cur))+'" placeholder="–"></div>'+
+    '<input class="amt num" readonly tabindex="-1" aria-label="'+esc(l.name)+' payment for '+label(cur)+'" value="'+amtShort(loanVal(l,cur))+'" placeholder="–"></div>'+
     '<div class="sub2">'+st+(loanVal(l,cur)>0?' · '+(l.due?'Due on the '+ord(l.due)+' · ':'')+((l.paid&&l.paid[cur])?'Paid':'Not paid yet · not deducted'):'')+'<div class="prog"><i style="width:'+pct.toFixed(1)+'%"></i></div></div>';
   if(open){
     h+='<div class="edit">'+
@@ -291,23 +291,58 @@ function loanRow(l){
 function collectRow(c){
   var st=clStatus(c,cur),canTick=st.state==='open'||st.state==='done',pct=c.term?Math.min(100,clPaidCount(c)/c.term*100):0;
   return '<div class="row" data-id="'+c.id+'"><div class="line"><button class="nm" data-act="golist" title="Open on the Collectibles page">'+(c.name?esc(c.name):'<span style="color:var(--muted)">Untitled</span>')+'<small>'+esc(c.cat)+'</small></button>'+
-    '<input class="amt num" readonly tabindex="-1" aria-label="'+esc(c.name)+' amount for '+label(cur)+'" value="'+inputVal(st.sched)+'" placeholder="–"></div>'+
+    '<input class="amt num" readonly tabindex="-1" aria-label="'+esc(c.name)+' amount for '+label(cur)+'" value="'+amtShort(st.sched)+'" placeholder="–"></div>'+
     '<div class="sub2"><span'+(st.late?' style="color:var(--neg)"':'')+'>'+esc(st.text)+'</span>'+(canTick?'<div><label style="display:inline-flex;gap:6px;align-items:center;color:var(--ink);margin-top:4px"><input type="checkbox" data-field="clpaid" data-id="'+c.id+'"'+(st.state==='done'?' checked':'')+'> Collected for '+FULL[+cur.split('-')[1]-1]+'</label></div>':'')+'<div class="prog cl"><i style="width:'+pct.toFixed(1)+'%"></i></div></div></div>';
+}
+/* --- Item sort (per section, saved on this device only; default = date added, oldest first) --- */
+var SORT_KEY='ebt.sort';
+function sortHasDue(k){return k==='bill'||k==='card'||k==='loan'}
+function sortPref(k){
+  try{var o=sortMap(),s=o[k];
+    if(s&&(s.by==='added'||s.by==='name'||(s.by==='due'&&sortHasDue(k)))&&(s.dir==='asc'||s.dir==='desc'))return {by:s.by,dir:s.dir}}catch(e){}
+  return {by:'added',dir:'asc'};
+}
+function sortMap(){var o={};try{o=JSON.parse(localStorage.getItem(SORT_KEY)||'{}')}catch(e){o={}}return (o&&typeof o==='object'&&!Array.isArray(o))?o:{}}
+function setSortPref(k,p){try{var o=sortMap();o[k]=p;localStorage.setItem(SORT_KEY,JSON.stringify(o))}catch(e){}}
+function sortList(k,list){
+  var p=sortPref(k),m=p.dir==='desc'?-1:1,a=list.map(function(x,i){return {x:x,i:i}});
+  a.sort(function(A,B){
+    if(p.by==='added')return (A.i-B.i)*m;
+    var r=0;
+    if(p.by==='name'){
+      var an=(A.x.name||'').trim(),bn=(B.x.name||'').trim();
+      if(!an!==!bn)return an?-1:1;
+      r=an.localeCompare(bn,undefined,{numeric:true,sensitivity:'base'});
+    }else{
+      var ad=A.x.due>0?A.x.due:0,bd=B.x.due>0?B.x.due:0;
+      if(!ad!==!bd)return ad?-1:1;
+      r=ad-bd;
+    }
+    return r?r*m:A.i-B.i;
+  });
+  return a.map(function(e){return e.x});
+}
+function sortBar(K,n){
+  if(n<2||K.k==='collect')return '';
+  var p=sortPref(K.k),L={added:['Oldest','Newest'],name:['A\u2013Z','Z\u2013A'],due:['Earliest','Latest']},lbl=L[p.by][p.dir==='asc'?0:1];
+  return '<div class="sortbar"><label for="sort-'+K.k+'">Sort</label><select id="sort-'+K.k+'" class="sortsel" data-sortby="'+K.k+'" aria-label="Sort '+K.title+' by">'+
+    '<option value="added"'+(p.by==='added'?' selected':'')+'>Date added</option><option value="name"'+(p.by==='name'?' selected':'')+'>Name</option>'+(sortHasDue(K.k)?'<option value="due"'+(p.by==='due'?' selected':'')+'>Due date</option>':'')+'</select>'+
+    '<button type="button" class="tbtn sortdir" data-act="sortdir" data-kind="'+K.k+'" aria-label="Order: '+lbl+'. Tap to reverse" title="Tap to reverse the order">'+(p.dir==='asc'?'\u2191 ':'\u2193 ')+lbl+'</button></div>';
 }
 function renderSections(){
   var c=calc(cur),h='';
   KINDS.forEach(function(K){
     var rows='',list,folded=!!(state.collapsed&&state.collapsed[K.k]);
-    if(K.k==='loan'){list=state.loans;rows=list.map(loanRow).join('')}
+    if(K.k==='loan'){list=sortList('loan',state.loans);rows=list.map(loanRow).join('')}
     else if(K.k==='collect'){list=clSort(CLd());rows=list.map(collectRow).join('')}
-    else{list=state.items.filter(function(i){return i.kind===K.k&&(itemShown(i,cur)||i.id===openId)});rows=list.map(function(i){return itemRow(K,i)}).join('')}
+    else{list=state.items.filter(function(i){return i.kind===K.k&&(itemShown(i,cur)||i.id===openId)});list=sortList(K.k,list);rows=list.map(function(i){return itemRow(K,i)}).join('')}
     if(!list.length){
       rows='<div class="empty">No '+K.title.toLowerCase()+' yet.'+(K.k==='loan'||K.k==='collect'?'':(K.sugg.length?' Quick start:':''))+
         (K.sugg.length&&K.k!=='loan'&&K.k!=='collect'?'<div class="chips">'+K.sugg.map(function(s){return '<button class="chip" data-act="addnamed" data-kind="'+K.k+'" data-name="'+esc(s)+'">'+esc(s)+'</button>'}).join('')+'</div>':'')+'</div>';
     }
     var ltx=txMonth(cur).filter(function(x){return x.kind===K.k});
     if(ltx.length){var lsum=ltx.reduce(function(q,x){return q+x.amount},0);rows+='<div class="row"><div class="sub2" style="padding-top:10px">'+ltx.length+' logged transaction'+(ltx.length===1?'':'s')+' · '+fmt(lsum)+' included · <a href="#/transactions" data-nav data-v="tx" style="color:var(--accent)">View</a></div></div>'}
-    h+='<section class="panel'+(folded?' folded':'')+'" style="--cc:var('+(K.k==='income'?'--pos':K.color)+')" aria-label="'+K.title+'"><div class="ph"><h2><button class="foldbtn" data-act="fold" data-kind="'+K.k+'" aria-expanded="'+(!folded)+'"><span class="chev" aria-hidden="true">&#9654;</span><span class="pn">'+K.title+(K.hint?' <span class="khint">'+K.hint+'</span>':'')+'</span></button></h2><span class="tot"><b class="num" data-total="'+K.k+'">'+fmt(c[K.k])+'</b><small data-pct="'+K.k+'">'+pctLbl(K.k,c)+'</small></span></div>'+(folded?'':rows+
+    h+='<section class="panel'+(folded?' folded':'')+'" style="--cc:var('+(K.k==='income'?'--pos':K.color)+')" aria-label="'+K.title+'"><div class="ph"><h2><button class="foldbtn" data-act="fold" data-kind="'+K.k+'" aria-expanded="'+(!folded)+'"><span class="chev" aria-hidden="true">&#9654;</span><span class="pn">'+K.title+(K.hint?' <span class="khint">'+K.hint+'</span>':'')+'</span></button></h2><span class="tot"><b class="num" data-total="'+K.k+'">'+fmt(c[K.k])+'</b><small data-pct="'+K.k+'">'+pctLbl(K.k,c)+'</small></span></div>'+(folded?'':sortBar(K,list.length)+rows+
       '<div class="add"><button class="tbtn" data-act="add" data-kind="'+K.k+'">+ Add '+K.noun+'</button>'+(payKind(K.k)&&list.some(function(i){return i.due>0&&(K.k==='card'||i.repeat)})?'<button class="tbtn" data-act="cal" data-kind="'+K.k+'">Add due dates to my calendar</button>':'')+'</div>')+'</section>';
   });
   var allc=KINDS.every(function(K){return state.collapsed&&state.collapsed[K.k]});
@@ -429,6 +464,7 @@ document.addEventListener('click',function(ev){
   else if(act==='cpaid'){var cc2=CLd().filter(function(x){return x.id===id})[0],cm=b.getAttribute('data-m');if(cc2&&validYM(cm)){clCollect(cc2,cm);trackOnce('collectible-marked-paid');state.sample=false;save();renderSections();refresh()}}
   else if(act==='duemore'){dueAll=!dueAll;renderDue()}
   else if(act==='cal'){doCalendar(kind)}
+  else if(act==='sortdir'){var sp=sortPref(kind);sp.dir=sp.dir==='asc'?'desc':'asc';setSortPref(kind,sp);renderSections();focusKeep('[data-act="sortdir"][data-kind="'+kind+'"]')}
   else if(act==='fold'){state.collapsed=state.collapsed||{};if(state.collapsed[kind])delete state.collapsed[kind];else state.collapsed[kind]=true;save();renderSections();focusSoon('[data-act="fold"][data-kind="'+kind+'"]')}
   else if(act==='foldall'){var every=KINDS.every(function(K){return state.collapsed&&state.collapsed[K.k]});state.collapsed={};if(!every)KINDS.forEach(function(K){state.collapsed[K.k]=true});save();renderSections()}
   else if(act==='theme-color'||act==='theme-mode'){var ct=themeOf(themeOk(state.theme)?state.theme:'blue-dark');var tid=themeId(act==='theme-color'?b.getAttribute('data-color'):ct.color,act==='theme-mode'?b.getAttribute('data-mode'):ct.mode);if(themeOk(tid)){state.theme=tid;applyTheme(tid);save();renderSettings();renderInsights()}}
@@ -468,7 +504,7 @@ document.addEventListener('input',function(ev){
   if(f==='usual'){
     var ui=findItem(id);if(!ui)return;if(amtProblem(e.value,ui.kind))return;
     applyUsual(ui,num(e.value));touchTs(ui);state.sample=false;save();
-    var ab=document.querySelector('.row[data-id="'+id+'"] [data-field="amt"]');if(ab)ab.value=inputVal(itemVal(ui,cur));
+    var ab=document.querySelector('.row[data-id="'+id+'"] [data-field="amt"]');if(ab)ab.value=(document.activeElement===ab?inputVal(itemVal(ui,cur)):amtShort(itemVal(ui,cur)));
     syncDot(id);refresh();return;
   }
   if(f==='amt'){
@@ -481,7 +517,7 @@ document.addEventListener('input',function(ev){
   }
 });
 document.addEventListener('keydown',function(ev){var e=ev.target;if(ev.key==='Enter'&&e&&e.getAttribute&&e.getAttribute('data-budget')){e.blur()}});
-document.addEventListener('focusin',function(ev){var e=ev.target;if(e.getAttribute&&e.getAttribute('data-field')==='amt'){var v0=e.value,sI=findItem(e.getAttribute('data-id'));if(sI)amtSnap[sI.id]=snapItem(sI);setTimeout(function(){/* v9.29: only select if the user has not typed since focus (else the first typed character was replaced by the next one) */try{if(document.activeElement===e&&e.value===v0&&e.selectionStart===e.selectionEnd)e.select()}catch(x){}},0)}if(e.getAttribute&&e.getAttribute('data-field')==='usual'){var fi=findItem(e.getAttribute('data-id'));if(fi){usualBefore[fi.id]=itemVal(fi,cur);amtSnap[fi.id]=snapItem(fi)}}});
+document.addEventListener('focusin',function(ev){var e=ev.target;if(e.getAttribute&&e.getAttribute('data-field')==='amt'){var sI=findItem(e.getAttribute('data-id'));if(isShortAmt(e.value)&&sI)e.value=inputVal(itemVal(sI,cur));var v0=e.value;if(sI)amtSnap[sI.id]=snapItem(sI);setTimeout(function(){/* v9.29: only select if the user has not typed since focus (else the first typed character was replaced by the next one) */try{if(document.activeElement===e&&e.value===v0&&e.selectionStart===e.selectionEnd)e.select()}catch(x){}},0)}if(e.getAttribute&&e.getAttribute('data-field')==='usual'){var fi=findItem(e.getAttribute('data-id'));if(fi){usualBefore[fi.id]=itemVal(fi,cur);amtSnap[fi.id]=snapItem(fi)}}});
 function syncDot(id){
   var it=findItem(id),row=document.querySelector('.row[data-id="'+id+'"]');if(!it||!row)return;
   var nm=row.querySelector('.nm'),dot=nm.querySelector('.edited');
@@ -511,7 +547,7 @@ document.addEventListener('focusout',function(ev){
   delete firstEnt[id];
   var rawV=e.value,rawP=amtProblem(rawV,it.kind);if(rawP&&amtSnap[id])restoreItem(it,amtSnap[id]);delete amtSnap[id];if(rawP)setTimeout(function(){flagBad(document.querySelector('[data-field="amt"][data-id="'+id+'"]')||e,rawP)},0);
   if(it.usual&&it.repeat&&Object.prototype.hasOwnProperty.call(it.over,cur)&&num(it.over[cur])===itemDefault({usual:it.usual,repeat:it.repeat,start:it.start,over:{}},cur))delete it.over[cur];
-  e.value=inputVal(itemVal(it,cur));save();syncDot(id);refresh();
+  e.value=amtShort(itemVal(it,cur));save();syncDot(id);refresh();
 });
 document.addEventListener('change',function(ev){
   var e=ev.target,f=e.getAttribute('data-field'),id=e.getAttribute('data-id');
@@ -557,4 +593,8 @@ document.addEventListener('change',function(ev){
   if(f==='name'||f==='lname'){patchName(id);syncDate(id);refresh();return}
   setTimeout(function(){keepFocus(renderSections);refresh()},0);
 });
-
+document.addEventListener('change',function(ev){
+  var e=ev.target,k=e&&e.getAttribute&&e.getAttribute('data-sortby');if(!k)return;
+  var sp=sortPref(k),by=e.value;if(by!=='added'&&by!=='name'&&by!=='due')return;
+  setSortPref(k,{by:by,dir:sp.dir});renderSections();focusKeep('#sort-'+k);
+});

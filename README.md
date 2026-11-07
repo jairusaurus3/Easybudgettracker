@@ -3,16 +3,17 @@
 Month-by-month budgeting made easy. Plan your income, bills, spending and savings for each month, keep tabs on groceries and collectibles, get due-date reminders for bills, credit cards and loans, and save everything to your own Google Drive.
 
 **Live app:** [ezbudgettracker.app](https://ezbudgettracker.app)
-**Current version:** 9.35
+**Current version:** 9.39.1
 
 ## Features
 
 - **Monthly budget**: income, bills, spending, savings, credit cards and loans, planned month by month. Leftover money can carry over to the next month.
+- **Sorting**: every item section on the Budget page (once it has 2 or more items) can be sorted by date added, name or, for bills, cards and loans, due date, ascending or descending. The choice is saved on the device only and never changes your data or totals.
 - **Mark as paid and due dates**: bills, credit cards and loans have a due date and a *Mark paid* button. An unpaid item is not deducted from your balance until you mark it paid. A banner reminds you when something is due soon, due today or overdue, and you can export due dates to your calendar (.ics).
 - **Collectibles**: track money people owe you. The amount comes out of your remaining balance while it is uncollected and comes back when you tick it as collected. Money collected back is not counted as income.
 - **Transactions**: a full history of what you added, changed and removed, with a monthly ledger.
 - **Reports**: spending and income breakdowns, a 12-month trend, a yearly summary and highlights.
-- **Grocery list**: a shopping list grouped by aisle with an optional shopping limit. Ticked items can be added to a Spending category.
+- **Grocery list**: a shopping list grouped by aisle with an optional shopping limit. Ticked items can be added to a Spending category, or choose *Don't link* to keep the list only (nothing is added to your budget).
 - **Budget notebooks**: separate pages for trips and projects, with categories, items and a page budget.
 - **Export**: download your budget as Excel or CSV. Totals match the app.
 - **Google Drive sync (optional)**: back up and sync your budget to your own Google Drive.
@@ -48,6 +49,16 @@ js/                   App scripts, loaded in this order by index.html:
 guides/               Budgeting guides (static pages)
 icons/                App icons
 ```
+
+The app is plain HTML, CSS and JavaScript with no build step. The scripts share global variables, so the load order in `index.html` matters.
+
+## Updating the app
+
+When you change any file, bump the version in three places so that installed copies pick up the new files:
+
+1. The `?v=` number on the script and stylesheet links in `index.html`
+2. The cache name in `sw.js` (for example `ebt-v9-39-1`)
+3. The footer text in `js/storage.js`
 
 ## License
 

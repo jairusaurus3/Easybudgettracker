@@ -160,5 +160,5 @@ window.addEventListener('storage',function(ev){
   staleTab=true;renderNotice();
 });
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flushSave()});
-function setStatus(t){statusText=t;var f=document.getElementById('foot');if(f)f.textContent=t+' · Your budget stays private to you. · version 9.35'}
+function setStatus(t){statusText=t;var f=document.getElementById('foot');if(f)f.textContent=t+' · Your budget stays private to you. · version 9.39.1'}
 

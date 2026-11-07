@@ -4,7 +4,8 @@
 /* --- Grocery list --- */
 var grSureTimer=null;
 function grTarget(create){
-  var G=GR(),it=state.items.filter(function(i){return i.id===G.link&&i.kind==='spend'})[0];
+  var G=GR();if(G.noLink)return null;
+  var it=state.items.filter(function(i){return i.id===G.link&&i.kind==='spend'})[0];
   if(it)return it;
   it=state.items.filter(function(i){return i.kind==='spend'&&/grocer/i.test(i.name||'')})[0];
   if(it){G.link=it.id;return it}
@@ -20,7 +21,9 @@ function budgetAdd(it,ym,delta){
 }
 function grCheck(g){
   var t=grTarget(true),today=isoToday(),amt=g.price||0,ym=today.slice(0,7);
-  g.bought=today;g.applied={id:t.id,ym:ym,amt:amt};
+  g.bought=today;
+  if(!t){g.applied=null;state.sample=false;return}
+  g.applied={id:t.id,ym:ym,amt:amt};
   if(amt)budgetAdd(t,ym,amt);
   state.sample=false;
 }
@@ -122,9 +125,15 @@ function grGuess(name){
 function grAisle(i){return (i.aisle&&grAisleOk(i.aisle))?i.aisle:grGuess(i.name)}
 function grAisleLabel(k){for(var a=0;a<GR_AISLES.length;a++)if(GR_AISLES[a][0]===k)return GR_AISLES[a][1];return 'Others'}
 var grClosed={},grMsg='';
+function grBoughtSub(i){
+  var b='Bought '+isoShort(i.bought);
+  if(i.applied&&i.applied.amt)return b+' · added to your budget';
+  if(GR().noLink)return b+' · not linked to your budget';
+  return i.price?b+' · added to your budget':b+' · add the price to count it in your budget';
+}
 function grRow(i,grouped){
   var sub;
-  if(i.bought)sub=(i.price?'Bought '+isoShort(i.bought)+' · added to your budget':'Bought '+isoShort(i.bought)+' · add the price to count it in your budget');
+  if(i.bought)sub=grBoughtSub(i);
   else sub=i.price?'':'Price unknown';
   var mv='';if(grouped&&!i.bought){mv='<select class="pg-aisle" data-gr="aisle" aria-label="Move '+esc(i.name)+' to another aisle"><option value="__" selected>Move…</option><option value="">Auto-sort</option>'+GR_AISLES.map(function(a){return '<option value="'+a[0]+'"'+(a[0]===grAisle(i)?' disabled':'')+'>'+esc(a[1])+'</option>'}).join('')+'</select>'}
   return '<li class="pg-li'+(i.bought?' done':'')+'" data-gid="'+esc(i.id)+'" data-aisle="'+esc(grAisle(i))+'"><div class="pg-row">'+
@@ -139,8 +148,8 @@ function renderGrocery(){
   h+='<header class="pg-head"><div class="pg-eye">Shopping</div><h2>Grocery list</h2></header>';
   h+='<section class="pg-card pg-limit" id="grLimitCard" aria-live="polite"><div class="pg-limrow"><div><div class="pg-lbl">List total</div><div class="pg-big num" id="grTotal"></div></div><label class="pg-f pg-limin">Shopping limit<input class="pg-in num" id="grLimit" type="text" inputmode="decimal" placeholder="No limit" value="'+(G.limit||'')+'" aria-label="Shopping limit"></label></div><div class="budget-meter" id="grMeter"><i></i></div><div class="pg-limmsg" id="grLimitMsg"></div><div class="status" id="grPreview"></div><div class="status" id="grNoPrice"></div></section>';
   h+='<section class="pg-card" aria-live="polite"><div class="pg-two"><div><div class="pg-lbl">Still to buy</div><div class="pg-big num" id="grTo"></div><div class="status" id="grToN"></div></div><div><div class="pg-lbl">In your cart</div><div class="pg-big num" id="grCart"></div><div class="status" id="grCartN"></div></div></div>'+
-    '<div class="pg-link"><label class="pg-f" for="grLink">Add ticked items to this Spending category</label><select class="pg-in" id="grLink">'+(t?'':'<option value="">Groceries (will be created)</option>')+spends.map(function(i){return '<option value="'+esc(i.id)+'"'+(t&&t.id===i.id?' selected':'')+'>'+esc(i.name||'Unnamed')+'</option>'}).join('')+'<option value="__new">+ New spending category…</option></select><div class="pg-addrow" id="grNewRow" hidden style="margin-top:8px"><input class="pg-in grow" id="grNewLink" maxlength="40" placeholder="Category name, e.g. Pharmacy" aria-label="New spending category name"><button type="button" class="tbtn primary" data-gr="newlink">Create</button></div>'+
-    '<div class="status">This month, that category totals <b class="num" id="grBudget"></b> on your dashboard.</div></div></section>';
+    '<div class="pg-link"><label class="pg-f" for="grLink">Add ticked items to this Spending category</label><select class="pg-in" id="grLink"><option value="__none"'+(G.noLink?' selected':'')+'>Don\u2019t link (keep list only)</option>'+(t||G.noLink?'':'<option value="" selected>Groceries (will be created)</option>')+spends.map(function(i){return '<option value="'+esc(i.id)+'"'+(t&&t.id===i.id?' selected':'')+'>'+esc(i.name||'Unnamed')+'</option>'}).join('')+'<option value="__new">+ New spending category…</option></select><div class="pg-addrow" id="grNewRow" hidden style="margin-top:8px"><input class="pg-in grow" id="grNewLink" maxlength="40" placeholder="Category name, e.g. Pharmacy" aria-label="New spending category name"><button type="button" class="tbtn primary" data-gr="newlink">Create</button></div>'+
+    (G.noLink?'<div class="status">Not linked. Ticking items only moves them to Bought. Nothing is added to your budget.</div>':'<div class="status">This month, that category totals <b class="num" id="grBudget"></b> on your dashboard.</div>')+'</div></section>';
   h+='<form class="pg-add" id="grForm" novalidate><div class="pg-addrow"><input class="pg-in grow" id="grName" maxlength="80" placeholder="Item (e.g. Rice 5 kg)" aria-label="Item"><input class="pg-in amtw num" id="grAmt" type="text" inputmode="decimal" placeholder="Price" aria-label="Price (optional)"><button class="tbtn primary" type="submit">Add</button></div></form><p class="status" id="grAdded" role="status"'+(grMsg?'':' hidden')+'>'+esc(grMsg)+'</p>';
   var todo=G.items.filter(function(i){return !i.bought}),done=G.items.filter(function(i){return i.bought});
   done.sort(function(a,b){return a.bought<b.bought?1:a.bought>b.bought?-1:0});
@@ -168,7 +177,7 @@ function grAfter(id){renderGrocery();if(id)focusKeep('[data-gid="'+id+'"] [data-
       var nm=$('grNewLink').value.trim().slice(0,40);if(!nm){$('grNewLink').focus();return}
       var ex=state.items.filter(function(i){return i.kind==='spend'&&(i.name||'').toLowerCase()===nm.toLowerCase()})[0];
       if(!ex){ex={id:uid(),kind:'spend',name:nm,usual:0,repeat:false,start:null,over:{},due:0,paid:{}};state.items.push(ex)}
-      GR().link=ex.id;state.sample=false;save();renderGrocery();return}
+      GR().link=ex.id;GR().noLink=false;state.sample=false;save();renderGrocery();return}
     if(a==='del'){
       var it=item(b);if(!it)return;
       if(b.classList.contains('sure')){clearTimeout(grSureTimer);if(it.bought)grUncheck(it);var G=GR();G.items=G.items.filter(function(x){return x.id!==it.id});save();renderGrocery()}
@@ -189,12 +198,12 @@ function grAfter(id){renderGrocery();if(id)focusKeep('[data-gid="'+id+'"] [data-
       var v=pf(e.value);it.price=(e.value===''||!isFinite(v)||v<0)?null:Math.round(v*100)/100;
       grPrice(it);save();grSummary();
       var sub=e.closest('li').querySelector('[data-gr-sub]');
-      if(sub)sub.textContent=it.bought?(it.price?'Bought '+isoShort(it.bought)+' · added to your budget':'Bought '+isoShort(it.bought)+' · add the price to count it in your budget'):(it.price?'':'Price unknown');
+      if(sub)sub.textContent=it.bought?grBoughtSub(it):(it.price?'':'Price unknown');
     }
   });
   el.addEventListener('change',function(ev){
     var e=ev.target;
-    if(e.id==='grLink'){if(e.value==='__new'){$('grNewRow').hidden=false;$('grNewLink').focus();return}GR().link=e.value;save();grSummary();return}
+    if(e.id==='grLink'){if(e.value==='__new'){$('grNewRow').hidden=false;$('grNewLink').focus();return}var GL=GR();if(e.value==='__none'){GL.noLink=true;GL.link=''}else{GL.noLink=false;GL.link=e.value}save();renderGrocery();focusKeep('#grLink');return}
     var a=e.getAttribute&&e.getAttribute('data-gr'),it=item(e);if(!a||!it)return;
     if(a==='check'){if(e.checked){grCheck(it);trackOnce('grocery-item-checked')}else grUncheck(it);save();grAfter(it.id)}
     else if(a==='name'){if(!e.value.trim()){it.name='Item';e.value='Item'}else it.name=e.value.trim();save();

@@ -37,9 +37,9 @@ function cleanCL(c){
   return out;
 }
 function cleanGR(g){
-  var out={link:'',limit:0,items:[],group:true,learn:{}};if(!g||typeof g!=='object')return out;out.group=g.group!==false;
+  var out={link:'',noLink:false,limit:0,items:[],group:true,learn:{}};if(!g||typeof g!=='object')return out;out.group=g.group!==false;
   if(g.learn&&typeof g.learn==='object'){Object.keys(g.learn).slice(0,300).forEach(function(k){var v=g.learn[k];if(typeof k==='string'&&k.length<=60&&typeof v==='string'&&grAisleOk(v))out.learn[k]=v})}
-  out.link=cid(g.link||'x');if(!g.link)out.link='';out.limit=Math.max(0,num(g.limit));
+  out.link=cid(g.link||'x');if(!g.link)out.link='';out.noLink=g.noLink===true;if(out.noLink)out.link='';out.limit=Math.max(0,num(g.limit));
   (Array.isArray(g.items)?g.items:[]).slice(0,2000).forEach(function(i){
     if(!i||typeof i!=='object')return;
     var pr=(i.price===null||i.price===undefined||i.price==='')?null:Math.max(0,num(i.price)),bought=isoValid(i.bought)?i.bought:'',ap=null;
