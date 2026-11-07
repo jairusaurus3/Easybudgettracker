@@ -52,14 +52,6 @@ icons/                App icons
 
 The app is plain HTML, CSS and JavaScript with no build step. The scripts share global variables, so the load order in `index.html` matters.
 
-## Updating the app
-
-When you change any file, bump the version in three places so that installed copies pick up the new files:
-
-1. The `?v=` number on the script and stylesheet links in `index.html`
-2. The cache name in `sw.js` (for example `ebt-v9-39-1`)
-3. The footer text in `js/storage.js`
-
 ## License
 
 All rights reserved unless stated otherwise.
