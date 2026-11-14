@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="stylesheet" href="styles.css?v=9.39.1">
+<link rel="stylesheet" href="styles.css?v=9.40.1">
 <title>Easy Budget Tracker: Free Monthly Budget Planner and Expense Tracker</title>
 <meta name="description" content="Plan your month in minutes. Free budget tracker with bill reminders, spending limits, savings goals and a what-if savings calculator. Private by design: your budget stays in your browser.">
 <link rel="canonical" href="https://ezbudgettracker.app/">
@@ -40,6 +40,7 @@
       <button class="tbtn" data-act="today" id="todayBtn" hidden>This month</button>
       <button class="tbtn" data-act="gbtn" id="gBtn" hidden>Sign in with Google</button>
       <button class="tbtn" data-act="gsync" id="gSyncBtn" hidden aria-label="Sync with Google Drive">&#8635; Sync</button>
+      <label class="tbtn avatar curbtn" id="curWrap" title="Currency"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6 12h.01M18 12h.01"/></svg><select id="curSel" aria-label="Currency"></select></label>
       <button class="tbtn avatar" data-act="settings" id="setBtn" aria-expanded="false" aria-controls="settings" aria-label="Settings"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg></button>
     </div>
   </header>
@@ -50,6 +51,7 @@
   <div id="dueBanner"></div>
   <div id="notice"></div>
   <section class="hero" id="hero" aria-label="Remaining balance"></section>
+  <section class="limcard" id="limOverall" aria-label="Overall monthly spending limit"></section>
   <section class="stripcard" aria-label="Year at a glance"><p class="striplbl" id="stripLbl"></p><div class="strip" id="strip"></div></section>
   <div class="foldbar" id="foldbar"></div>
   <section class="grid" id="sections"></section>
@@ -101,20 +103,20 @@
 <datalist id="s-saving"><option value="Emergency fund"><option value="Retirement"><option value="Travel fund"><option value="Investments"></datalist>
 <datalist id="s-card"><option value="BDO card"><option value="BPI card"><option value="Metrobank card"><option value="Security Bank card"><option value="UnionBank card"></datalist>
 
-<script defer src="js/storage.js?v=9.39.1"></script>
-<script defer src="js/calc.js?v=9.39.1"></script>
-<script defer src="js/budget.js?v=9.39.1"></script>
-<script defer src="js/google-sync.js?v=9.39.1"></script>
-<script defer src="js/import-export.js?v=9.39.1"></script>
-<script defer src="js/routing.js?v=9.39.1"></script>
-<script defer src="js/transactions.js?v=9.39.1"></script>
-<script defer src="js/reports.js?v=9.39.1"></script>
-<script defer src="js/navigation.js?v=9.39.1"></script>
-<script defer src="js/collectibles.js?v=9.39.1"></script>
-<script defer src="js/help.js?v=9.39.1"></script>
-<script defer src="js/groceries.js?v=9.39.1"></script>
-<script defer src="js/notebook.js?v=9.39.1"></script>
-<script defer src="js/boot.js?v=9.39.1"></script>
+<script defer src="js/storage.js?v=9.40.1"></script>
+<script defer src="js/calc.js?v=9.40.1"></script>
+<script defer src="js/budget.js?v=9.40.1"></script>
+<script defer src="js/google-sync.js?v=9.40.1"></script>
+<script defer src="js/import-export.js?v=9.40.1"></script>
+<script defer src="js/routing.js?v=9.40.1"></script>
+<script defer src="js/transactions.js?v=9.40.1"></script>
+<script defer src="js/reports.js?v=9.40.1"></script>
+<script defer src="js/navigation.js?v=9.40.1"></script>
+<script defer src="js/collectibles.js?v=9.40.1"></script>
+<script defer src="js/help.js?v=9.40.1"></script>
+<script defer src="js/groceries.js?v=9.40.1"></script>
+<script defer src="js/notebook.js?v=9.40.1"></script>
+<script defer src="js/boot.js?v=9.40.1"></script>
 
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
