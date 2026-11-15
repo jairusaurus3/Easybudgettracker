@@ -3,13 +3,13 @@
 Month-by-month budgeting made easy. Plan your income, bills, spending and savings for each month, keep tabs on groceries and collectibles, get due-date reminders for bills, credit cards and loans, and save everything to your own Google Drive.
 
 **Live app:** [ezbudgettracker.app](https://ezbudgettracker.app)
-**Current version:** 9.40.1
+**Current version:** 9.41
 
 ## Features
 
 - **Monthly budget**: income, bills, spending, savings, credit cards and loans, planned month by month. Leftover money can carry over to the next month.
 - **Spending limits**: one overall monthly limit shown above the 12-month overview, with a progress bar and warnings at 80% and 100%. Per-category limits are set on the Insights page, which shares the same overall limit.
-- **Currency**: choose the currency symbol from the banknote icon beside Settings. It changes the symbol only and does not convert amounts.
+- **Currency**: new users are asked to choose a currency the first time they open the app (the best guess from the browser language is pre-selected). It can be changed any time from the banknote icon beside Settings. It changes the symbol only and does not convert amounts.
 - **Sorting**: every item section on the Budget page (once it has 2 or more items) can be sorted by date added, name or, for bills, cards and loans, due date, ascending or descending. The choice is saved on the device only and never changes your data or totals.
 - **Mark as paid and due dates**: bills, credit cards and loans have a due date and a *Mark paid* button. An unpaid item is not deducted from your balance until you mark it paid. A banner reminds you when something is due soon, due today or overdue, and you can export due dates to your calendar (.ics).
 - **Collectibles**: track money people owe you. The amount comes out of your remaining balance while it is uncollected and comes back when you tick it as collected. Money collected back is not counted as income.

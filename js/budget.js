@@ -238,6 +238,65 @@ function renderCur(){
   if(s.value!==cc)s.value=cc;
   var w=$('curWrap');if(w)w.title='Currency: '+curLabel(cc);s.setAttribute('aria-label','Currency: '+curLabel(cc));
 }
+/* --- v9.41: first-run currency pop-up (brand-new visitors only; existing users never see it) --- */
+var CUR_REGION={PH:'₱',US:'$',GB:'£',IE:'€',DE:'€',FR:'€',ES:'€',IT:'€',NL:'€',PT:'€',AT:'€',BE:'€',FI:'€',GR:'€',LU:'€',IN:'₹',JP:'¥',CN:'¥',KR:'₩',AU:'A$',CA:'C$',SG:'S$',BR:'R$',ID:'Rp',TH:'฿',CH:'CHF',SE:'kr',NO:'kr',DK:'kr'};
+var curFirstEl=null,curFirstPrev=null;
+function curGuess(){
+  try{
+    var L=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||''];
+    for(var i=0;i<L.length;i++){var m=/[-_]([A-Za-z]{2})$/.exec(L[i]||'');if(m&&CUR_REGION[m[1].toUpperCase()])return CUR_REGION[m[1].toUpperCase()]}
+    var l=String(L[0]||'').toLowerCase();if(l.indexOf('fil')===0||l.indexOf('tl')===0)return '₱';
+  }catch(e){}
+  return '₱';
+}
+function curFirstPick(sym){
+  if(CURRENCIES.indexOf(sym)<0)return;
+  state.currency=sym;renderAll();
+  var el=curFirstEl;if(!el)return;
+  [].forEach.call(el.querySelectorAll('[data-cf]'),function(b){b.setAttribute('aria-pressed',b.getAttribute('data-cf')===sym?'true':'false')});
+  var sel=el.querySelector('#cfMore');if(sel)sel.value=CUR_TOP.indexOf(sym)>=0?'':sym;
+  var go=el.querySelector('#cfGo');if(go)go.textContent='Continue with '+sym;
+}
+function curFirstClose(keep){
+  var el=curFirstEl;if(!el)return;
+  curFirstEl=null;document.removeEventListener('keydown',curFirstKey,true);
+  if(el.parentNode)el.parentNode.removeChild(el);
+  document.body.style.overflow='';
+  lsSet('ebt.cur-chosen','1');
+  if(keep){save()}
+  try{if(curFirstPrev&&curFirstPrev.focus)curFirstPrev.focus()}catch(e){}
+}
+function curFirstKey(e){
+  if(!curFirstEl)return;
+  if(e.key==='Escape'){e.preventDefault();curFirstClose(true);return}
+  if(e.key!=='Tab')return;
+  var f=[].filter.call(curFirstEl.querySelectorAll('button,select'),function(x){return !x.disabled&&x.offsetParent!==null});
+  if(!f.length)return;
+  var first=f[0],last=f[f.length-1],a=document.activeElement;
+  if(!curFirstEl.contains(a)){e.preventDefault();first.focus()}
+  else if(e.shiftKey&&a===first){e.preventDefault();last.focus()}
+  else if(!e.shiftKey&&a===last){e.preventDefault();first.focus()}
+}
+function showCurFirst(){
+  if(curFirstEl||!state)return;
+  var g=curGuess();if(CURRENCIES.indexOf(g)<0)g='₱';
+  curFirstPrev=document.activeElement;
+  var top=CUR_TOP.map(function(c){var nm=(CUR_NAMES[c]||'').replace(/\s*\([A-Z/]+\)$/,'');return '<button type="button" data-cf="'+esc(c)+'" aria-pressed="false"><b>'+esc(c)+'</b><span>'+esc(nm)+'</span></button>'}).join('');
+  var more=CURRENCIES.filter(function(c){return CUR_TOP.indexOf(c)<0}).map(function(c){return '<option value="'+esc(c)+'">'+esc(curLabel(c))+'</option>'}).join('');
+  var el=document.createElement('div');el.className='curfirst';el.id='curFirst';
+  el.innerHTML='<div class="curfirst-card" role="dialog" aria-modal="true" aria-labelledby="cfT" aria-describedby="cfD"><h2 id="cfT">Choose your currency</h2><p id="cfD">This is the symbol shown next to your amounts. You can change it any time with the banknote icon at the top.</p><div class="cf-grid" role="group" aria-label="Popular currencies">'+top+'</div><label class="cf-more"><span>More currencies</span><select id="cfMore"><option value="">Choose another currency…</option>'+more+'</select></label><button type="button" class="tbtn primary cf-go" id="cfGo">Continue</button></div>';
+  document.body.appendChild(el);curFirstEl=el;document.body.style.overflow='hidden';
+  el.addEventListener('click',function(e){
+    if(e.target===el){curFirstClose(true);return}
+    var b=e.target.closest&&e.target.closest('[data-cf]');if(b){curFirstPick(b.getAttribute('data-cf'));return}
+    if(e.target.id==='cfGo')curFirstClose(true);
+  });
+  el.querySelector('#cfMore').addEventListener('change',function(e){if(e.target.value)curFirstPick(e.target.value)});
+  document.addEventListener('keydown',curFirstKey,true);
+  curFirstPick(g);
+  var f=el.querySelector('[data-cf][aria-pressed="true"]')||el.querySelector('#cfGo');if(f)f.focus();
+}
+function closeCurFirst(){if(curFirstEl){var el=curFirstEl;curFirstEl=null;document.removeEventListener('keydown',curFirstKey,true);if(el.parentNode)el.parentNode.removeChild(el);document.body.style.overflow='';lsSet('ebt.cur-chosen','1')}}
 function limBarHTML(val,lim){
   if(!(lim>0))return '';
   var pc=val/lim*100,cls=pc>=100?'over':pc>=80?'warn':'';

@@ -2,8 +2,10 @@
    Plain script (not a module). Shares globals with the other js/ files and must load in the order listed in index.html. */
 'use strict';
 /* ---------- boot ---------- */
+var brandNew=false;try{brandNew=localStorage.getItem(KEY)===null&&!lsGet('ebt.cur-chosen')}catch(e){}
 state=loadLocal()||sample();
 renderAll();
+if(brandNew)showCurFirst();
 gBoot();
 visitStats();
 (function connect(){
@@ -18,7 +20,7 @@ visitStats();
         dbDoc=doc;
         if(snap.exists){
           var d=snap.data()||{},remote=null;try{remote=sane(JSON.parse(d.json))}catch(e){}
-          if(remote&&(tsNum(d.updatedAt)>state.updatedAt)){state=remote;renderAll()}
+          if(remote&&(tsNum(d.updatedAt)>state.updatedAt)){state=remote;closeCurFirst();renderAll()}
           else{save()}
         }else if(state.updatedAt){save()}
         setStatus('Saved to your account');

@@ -1104,3 +1104,18 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .limtxt{font-size:.75rem;color:var(--muted);margin-top:3px}
 .limtxt.warn{color:#d99a32}.limtxt.over{color:var(--neg)}
 @media (max-width:767px){.limrow{grid-template-columns:minmax(0,1fr) 7rem}}
+
+/* v9.41: first-run currency pop-up */
+.curfirst{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.62);overflow:auto}
+.curfirst-card{width:100%;max-width:380px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:18px;padding:20px 18px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,.45);margin:auto}
+.curfirst-card h2{margin:0;font-size:1.25rem}
+.curfirst-card p{margin:0;color:var(--muted);font-size:.9rem;line-height:1.4}
+.cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cf-grid button{display:grid;gap:2px;justify-items:start;align-content:center;padding:12px;min-height:64px;border-radius:14px;border:1.5px solid var(--line);background:var(--field);color:var(--ink);cursor:pointer;text-align:left;font:inherit}
+.cf-grid button b{font-size:1.4rem;line-height:1.1}
+.cf-grid button span{font-size:.75rem;color:var(--muted)}
+.cf-grid button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.cf-more{display:grid;gap:6px;font-size:.8rem;color:var(--muted)}
+.cf-more select{width:100%;box-sizing:border-box;padding:11px 10px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--ink);font-size:16px;min-height:44px}
+.cf-go{width:100%;min-height:46px;justify-content:center}
+@media (max-width:420px){.cf-grid button{padding:10px}}
