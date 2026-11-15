@@ -318,7 +318,7 @@ function txRestore(id){
 function txCommit(c,toExisting){
   var ym=c.date.slice(0,7),it=toExisting?findItem(c.match):null,before=0;
   if(it){before=itemVal(it,ym);it.over[ym]=Math.round((before+c.amt)*100)/100}
-  else{it={id:uid(),kind:c.kind,name:c.name,usual:0,repeat:false,start:ym,over:{}};it.over[ym]=c.amt;state.items.push(it)}
+  else{it={id:uid(),kind:c.kind,name:c.name,usual:0,repeat:false,start:ym,over:{}};it.over[ym]=c.amt;if(c.kind==='spend'){it.dates={};it.dates[ym]=c.date}state.items.push(it)}
   logPush({ref:it.id,kind:c.kind,m:ym,date:c.date,name:it.name||KIND_LABEL[c.kind],amount:c.amt,act:before>0?'edited':'added',from:before,via:'tx'});
   state.sample=false;
   txDraft.amt='';txDraft.name='';txMsg='Added '+(c.dir==='in'?'+':'−')+fmt(c.amt)+' to '+KIND_LABEL[c.kind]+(it.name?' › '+it.name:'')+'.';
@@ -340,7 +340,7 @@ document.addEventListener('submit',function(ev){
     state.sample=false;txDraft.amt='';txDraft.name='';txMsg='Added −'+fmt(amt)+' on '+isoShort(d.date)+'.';
     txAfterChange();focusSoon('#txAmt');return;
   }
-  var match=nm?state.items.filter(function(i){return i.kind===kind&&!itemEnded(i,d.date.slice(0,7))&&i.name.trim().toLowerCase()===nm.toLowerCase()})[0]:null;
+  var match=(nm&&kind!=='spend')?state.items.filter(function(i){return i.kind===kind&&!itemEnded(i,d.date.slice(0,7))&&i.name.trim().toLowerCase()===nm.toLowerCase()})[0]:null;
   var c={kind:kind,name:nm,amt:amt,date:d.date,dir:d.dir,match:match?match.id:null};
   if(match){txConflict=c;txMsg='';renderTx();return}
   txCommit(c,false);

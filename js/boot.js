@@ -6,6 +6,7 @@ var brandNew=false;try{brandNew=localStorage.getItem(KEY)===null&&!lsGet('ebt.cu
 state=loadLocal()||sample();
 renderAll();
 if(brandNew)showCurFirst();
+wnCheck(brandNew);
 gBoot();
 visitStats();
 (function connect(){

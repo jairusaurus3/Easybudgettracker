@@ -3,13 +3,15 @@
 Month-by-month budgeting made easy. Plan your income, bills, spending and savings for each month, keep tabs on groceries and collectibles, get due-date reminders for bills, credit cards and loans, and save everything to your own Google Drive.
 
 **Live app:** [ezbudgettracker.app](https://ezbudgettracker.app)
-**Current version:** 9.41
+**Current version:** 9.43
 
 ## Features
 
 - **Monthly budget**: income, bills, spending, savings, credit cards and loans, planned month by month. Leftover money can carry over to the next month.
 - **Spending limits**: one overall monthly limit shown above the 12-month overview, with a progress bar and warnings at 80% and 100%. Per-category limits are set on the Insights page, which shares the same overall limit.
 - **Currency**: new users are asked to choose a currency the first time they open the app (the best guess from the browser language is pre-selected). It can be changed any time from the banknote icon beside Settings. It changes the symbol only and does not convert amounts.
+- **Spending calendar**: the calendar icon in the Spending card opens a month view with each day's total. Tap a day to see its items. Each spending item has a date (today by default, editable for past days; a date in another month moves the item there). Items added before this feature have no date and show a "set date" button. Spending no longer repeats monthly; use Bills for that.
+- **What's new**: after an update, existing users see a short pop-up once on their first open. It can be read again from Settings. New users do not see it. The last version seen is stored on the device only (a few bytes). To add notes for a release, edit `WN_NOTES` and `APP_VER` in `js/whatsnew.js`.
 - **Sorting**: every item section on the Budget page (once it has 2 or more items) can be sorted by date added, name or, for bills, cards and loans, due date, ascending or descending. The choice is saved on the device only and never changes your data or totals.
 - **Mark as paid and due dates**: bills, credit cards and loans have a due date and a *Mark paid* button. An unpaid item is not deducted from your balance until you mark it paid. A banner reminds you when something is due soon, due today or overdue, and you can export due dates to your calendar (.ics).
 - **Collectibles**: track money people owe you. The amount comes out of your remaining balance while it is uncollected and comes back when you tick it as collected. Money collected back is not counted as income.
@@ -47,6 +49,8 @@ js/                   App scripts, loaded in this order by index.html:
   help.js               How-to page
   groceries.js          Grocery list
   notebook.js           Budget notebooks
+  spendcal.js           Spending calendar
+  whatsnew.js           "What's new" pop-up
   boot.js               Start-up
 guides/               Budgeting guides (static pages)
 icons/                App icons

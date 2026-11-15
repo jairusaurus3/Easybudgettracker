@@ -329,30 +329,60 @@ function updateTotals(){
   KINDS.forEach(function(K){var e=document.querySelector('[data-total="'+K.k+'"]');if(e)e.textContent=fmt(c[K.k]);var q=document.querySelector('[data-pct="'+K.k+'"]');if(q)q.textContent=pctLbl(K.k,c)});
 }
 function tsLbl(ts){if(!(ts>0))return '';var d=new Date(ts);if(isNaN(d))return '';var o=MONTHS[d.getMonth()]+' '+d.getDate();return d.getFullYear()===new Date().getFullYear()?o:o+', '+d.getFullYear()}
-function dtHTML(o){var t=tsLbl(o.ts);return t?'<span class="dt" title="Last changed '+esc(t)+'">'+esc(t)+'</span>':''}
+/* v9.42: spending items show the date they were spent; everything else shows when it was last changed */
+function dtInfo(o){var sd=o.kind==='spend'&&o.dates&&o.dates[cur];if(sd)return {t:isoShort(sd),title:'Spent on '+isoShort(sd)};var t=tsLbl(o.ts);return t?{t:t,title:'Last changed '+t}:null}
+function dtHTML(o){var i=dtInfo(o);return i?'<span class="dt" title="'+esc(i.title)+'">'+esc(i.t)+'</span>':''}
+function spDim(m){var p=m.split('-');return new Date(+p[0],+p[1],0).getDate()}
+function spDefaultDate(m){var t=isoToday(),tm=t.slice(0,7);if(m===tm)return t;return m<tm?m+'-'+pad2(spDim(m)):m+'-01'}
+/* Sets the date of a spending item for month fm. A date in another month moves the item's amount to that month. Returns {ok,msg,ym}. */
+function setSpendDate(it,iso,fm){
+  var has=function(o,k){return Object.prototype.hasOwnProperty.call(o,k)};
+  if(!it||it.kind!=='spend')return {ok:false,msg:'Only spending items have a date.'};
+  if(it.repeat)return {ok:false,msg:'Repeating items cannot have a date. Untick "Repeats every month" first.'};
+  if(!isoValid(iso))return {ok:false,msg:'Pick a valid date.'};
+  if(+iso.slice(0,4)>new Date().getFullYear()+5)return {ok:false,msg:'That date looks like a typo.'};
+  var nm=iso.slice(0,7);
+  if(idx(nm)<idx(state.startMonth))return {ok:false,msg:'That is before your budget starts ('+label(state.startMonth)+').'};
+  if(it.end&&nm>it.end)return {ok:false,msg:'This item ended before '+label(nm)+'.'};
+  if(!it.dates)it.dates={};
+  if(nm===fm){it.dates[fm]=iso;return {ok:true,ym:fm}}
+  if(has(it.over,nm)||it.dates[nm]||it.start===nm)return {ok:false,msg:'This item already has an entry in '+label(nm)+'. Pick a date in '+label(fm)+' instead.'};
+  var amt=has(it.over,fm)?it.over[fm]:0;
+  delete it.over[fm];delete it.dates[fm];it.over[nm]=amt;it.dates[nm]=iso;
+  if(it.start===fm)it.start=nm;
+  return {ok:true,ym:nm};
+}
+function spDateEdit(it,iso){
+  if(!iso){renderSections();return}
+  var r=setSpendDate(it,iso,cur);
+  if(!r.ok){toast(r.msg);renderSections();return}
+  touchTs(it);state.sample=false;save();
+  if(r.ym!==cur){cur=r.ym;renderAll();toast('Moved to '+label(r.ym))}else{keepFocus(renderSections);refresh()}
+}
 function touchTs(o){if(o)o.ts=Date.now()}
 function syncDate(id){
   var o=findItem(id)||findLoan(id),row=document.querySelector('.row[data-id="'+id+'"]');if(!o||!row)return;
-  var nm=row.querySelector('.nm');if(!nm)return;var d=nm.querySelector('.dt'),t=tsLbl(o.ts);
+  var nm=row.querySelector('.nm');if(!nm)return;var d=nm.querySelector('.dt'),di=dtInfo(o),t=di&&di.t;
   if(!t){if(d)d.remove();return}
   if(!d){d=document.createElement('span');d.className='dt';var f=nm.firstChild;if(f&&f.nextSibling)nm.insertBefore(d,f.nextSibling);else nm.appendChild(d)}
-  d.textContent=t;d.title='Last changed '+t;
+  d.textContent=t;d.title=di.title;
 }
 function payBtn(o){var on=!!(o.paid&&o.paid[cur]);return '<button class="paybtn'+(on?' on':'')+'" data-act="paidtog" data-id="'+o.id+'" aria-pressed="'+on+'" title="'+(on?'Marked paid. Tap to undo':'Mark paid for '+FULL[+cur.split('-')[1]-1])+'">'+(on?'Paid ✓':'Mark paid')+'</button>'}
 function itemRow(K,it){
   var v=itemVal(it,cur),def=itemDefault(it,cur),edited=it.repeat&&it.usual&&Object.prototype.hasOwnProperty.call(it.over,cur)&&num(it.over[cur])!==def;
   var open=openId===it.id,h='<div class="row" data-id="'+it.id+'"><div class="line">'+
     '<div class="nmw"><button class="nm" data-act="toggle" data-id="'+it.id+'" aria-expanded="'+open+'" title="Edit details">'+(it.name?esc(it.name):'<span style="color:var(--muted)">Untitled</span>')+dtHTML(it)+
-    (payKind(K.k)?(it.due?'<small>due '+ord(it.due)+'</small>':(K.k==='bill'&&it.repeat?'<small>every month</small>':'<small>set due day</small>')):(it.repeat?'<small>every month</small>':''))+(edited?'<span class="edited" title="Different from the usual amount this month"></span>':'')+'</button>'+(payKind(K.k)&&v>0&&needsPaid(it,cur)?payBtn(it):'')+'</div>'+
+    (payKind(K.k)?(it.due?'<small>due '+ord(it.due)+'</small>':(K.k==='bill'&&it.repeat?'<small>every month</small>':'<small>set due day</small>')):(it.repeat?'<small>every month</small>':(K.k==='spend'&&!(it.dates&&it.dates[cur])?'<small>set date</small>':'')))+(edited?'<span class="edited" title="Different from the usual amount this month"></span>':'')+'</button>'+(payKind(K.k)&&v>0&&needsPaid(it,cur)?payBtn(it):'')+'</div>'+
     '<input class="amt num" inputmode="decimal" data-field="amt" data-id="'+it.id+'" value="'+amtShort(v)+'" placeholder="0.00" aria-label="'+esc(it.name||K.noun)+' amount for '+label(cur)+'"></div>';
   if(payKind(K.k)&&v>0){h+='<div class="sub2">'+(needsPaid(it,cur)?(it.due?'Due on the '+ord(it.due):'Set a due day in the details')+' · '+((it.paid&&it.paid[cur])?'Paid · counted in your balance':'Not paid yet · not deducted'):'Earlier month · counted as paid')+'</div>'}
   if(open){
     h+='<div class="edit">'+
       '<label>Name<input data-field="name" data-id="'+it.id+'" list="s-'+K.k+'" value="'+esc(it.name)+'" placeholder="Name"></label>'+
-      '<label>Usual amount<input class="num" inputmode="decimal" data-field="usual" data-id="'+it.id+'" value="'+inputVal(it.usual)+'" placeholder="0.00"></label>'+
-      '<label>Starting from<input data-field="start" data-id="'+it.id+'" type="month" value="'+(it.start||'')+'" placeholder="YYYY-MM"></label>'+
+      (K.k==='spend'&&!it.repeat?'<label>Date spent<input data-field="sdate" data-id="'+it.id+'" type="date" value="'+esc((it.dates&&it.dates[cur])||'')+'" min="'+esc(state.startMonth)+'-01" max="'+(new Date().getFullYear()+5)+'-12-31"></label>':'')+
+      (K.k!=='spend'||it.repeat?'<label>Usual amount<input class="num" inputmode="decimal" data-field="usual" data-id="'+it.id+'" value="'+inputVal(it.usual)+'" placeholder="0.00"></label>'+
+      '<label>Starting from<input data-field="start" data-id="'+it.id+'" type="month" value="'+(it.start||'')+'" placeholder="YYYY-MM"></label>':'')+
       (payKind(K.k)?'<label>Due day of month<input class="num" inputmode="numeric" data-field="due" data-id="'+it.id+'" value="'+(it.due||'')+'" placeholder="1 to 31"></label>':'')+
-      '<label class="chk"><input type="checkbox" data-field="repeat" data-id="'+it.id+'"'+(it.repeat?' checked':'')+'> Repeats every month</label>'+
+      (K.k!=='spend'||it.repeat?'<label class="chk"><input type="checkbox" data-field="repeat" data-id="'+it.id+'"'+(it.repeat?' checked':'')+'> Repeats every month</label>':'')+
       '<div class="acts">'+(confirmAct==='rm'+it.id?'<button class="linkbtn danger" data-act="remove" data-mode="from" data-id="'+it.id+'">Remove from '+short(cur)+' on</button><button class="linkbtn danger" data-act="remove" data-mode="all" data-id="'+it.id+'">Delete all months</button><button class="linkbtn" data-act="rmcancel" data-id="'+it.id+'">Cancel</button>':'<button class="linkbtn danger" data-act="remove" data-id="'+it.id+'">Remove</button>')+
       (edited?'<button class="linkbtn" data-act="resetmonth" data-id="'+it.id+'">Use the usual amount this month</button>':'')+
       '<button class="linkbtn" data-act="toggle" data-id="'+it.id+'">Done</button></div></div>';
@@ -435,7 +465,7 @@ function renderSections(){
     }
     var ltx=txMonth(cur).filter(function(x){return x.kind===K.k});
     if(ltx.length){var lsum=ltx.reduce(function(q,x){return q+x.amount},0);rows+='<div class="row"><div class="sub2" style="padding-top:10px">'+ltx.length+' logged transaction'+(ltx.length===1?'':'s')+' · '+fmt(lsum)+' included · <a href="#/transactions" data-nav data-v="tx" style="color:var(--accent)">View</a></div></div>'}
-    h+='<section class="panel'+(folded?' folded':'')+'" style="--cc:var('+(K.k==='income'?'--pos':K.color)+')" aria-label="'+K.title+'"><div class="ph"><h2><button class="foldbtn" data-act="fold" data-kind="'+K.k+'" aria-expanded="'+(!folded)+'"><span class="chev" aria-hidden="true">&#9654;</span><span class="pn">'+K.title+(K.hint?' <span class="khint">'+K.hint+'</span>':'')+'</span></button></h2><span class="tot"><b class="num" data-total="'+K.k+'">'+fmt(c[K.k])+'</b><small data-pct="'+K.k+'">'+pctLbl(K.k,c)+'</small></span></div>'+(folded?'':sortBar(K,list.length)+rows+
+    h+='<section class="panel'+(folded?' folded':'')+'" style="--cc:var('+(K.k==='income'?'--pos':K.color)+')" aria-label="'+K.title+'"><div class="ph"><h2><button class="foldbtn" data-act="fold" data-kind="'+K.k+'" aria-expanded="'+(!folded)+'"><span class="chev" aria-hidden="true">&#9654;</span><span class="pn">'+K.title+(K.hint?' <span class="khint">'+K.hint+'</span>':'')+'</span></button></h2>'+(K.k==='spend'?'<button type="button" class="tbtn avatar phbtn" data-act="spcal" title="Spending calendar" aria-label="Spending calendar"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg></button>':'')+'<span class="tot"><b class="num" data-total="'+K.k+'">'+fmt(c[K.k])+'</b><small data-pct="'+K.k+'">'+pctLbl(K.k,c)+'</small></span></div>'+(folded?'':sortBar(K,list.length)+rows+
       '<div class="add"><button class="tbtn" data-act="add" data-kind="'+K.k+'">+ Add '+K.noun+'</button>'+(payKind(K.k)&&list.some(function(i){return i.due>0&&(K.k==='card'||i.repeat)})?'<button class="tbtn" data-act="cal" data-kind="'+K.k+'">Add due dates to my calendar</button>':'')+'</div>')+'</section>';
   });
   var allc=KINDS.every(function(K){return state.collapsed&&state.collapsed[K.k]});
@@ -471,6 +501,7 @@ function renderSettings(){
     '<label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="set-carry"'+(state.carry?' checked':'')+'> Carry leftover money into the next month</label>'+
     '<label>Tracking starts in<input id="set-start" type="month" value="'+state.startMonth+'" placeholder="YYYY-MM"></label>'+(state.carry?'<label>Money on hand at the start<input class="num" id="set-open" inputmode="decimal" value="'+inputVal(state.opening)+'" placeholder="0.00"></label>':'')+
     '</div></div>'+
+    '<div class="set-sec"><h3 class="set-h">What’s new</h3><div class="srow"><button class="tbtn" data-act="whatsnew">See what’s new in this version</button></div></div>'+
     '<div class="set-sec"><h3 class="set-h">Backup and reset</h3><div class="srow"><button class="tbtn" data-act="export">Download a backup</button>'+
     '<label class="tbtn" for="set-file" style="cursor:pointer">Restore a backup</label><input id="set-file" type="file" accept=".json,application/json" hidden>'+
     '<button class="tbtn" data-act="exporttext">Copy backup as text</button><button class="tbtn" data-act="pasteopen">Restore from text</button>'+
@@ -484,7 +515,7 @@ function renderSettings(){
   var nb=el.querySelector('.set-body');if(nb)nb.scrollTop=keepTop;
   if(keepSel){var kn=el.querySelector(keepSel);if(kn&&kn!==document.activeElement)try{kn.focus({preventScroll:true})}catch(x){}}
 }
-function renderAll(){applyTheme(state.theme||lsGet('ebt.theme')||'blue-dark');renderHeader();renderCur();renderNotice();renderDue();renderHero();renderInsights();renderStrip();renderKpis();renderRecent();renderSections();updateLimits();renderSettings();renderPages();syncDark();setStatus(statusText)}
+function renderAll(){applyTheme(state.theme||lsGet('ebt.theme')||'blue-dark');renderHeader();renderCur();if(typeof spCalRefresh==='function')spCalRefresh();renderNotice();renderDue();renderHero();renderInsights();renderStrip();renderKpis();renderRecent();renderSections();updateLimits();renderSettings();renderPages();syncDark();setStatus(statusText)}
 
 /* ---------- actions ---------- */
 function findItem(id){return state.items.filter(function(i){return i.id===id})[0]}
@@ -528,14 +559,16 @@ document.addEventListener('click',function(ev){
     }
     state.sample=false;
     if(kind==='loan'){var l={id:uid(),name:nm,pay:0,term:12,first:cur,due:0,paid:{}};state.loans.push(l);openId=l.id}
-    else{var it=nm?state.items.filter(function(i){return i.kind===kind&&!itemEnded(i,cur)&&!itemShown(i,cur)&&i.name.trim().toLowerCase()===nm.trim().toLowerCase()})[0]:null;
+    else{var it=(nm&&kind!=='spend')?state.items.filter(function(i){return i.kind===kind&&!itemEnded(i,cur)&&!itemShown(i,cur)&&i.name.trim().toLowerCase()===nm.trim().toLowerCase()})[0]:null;
       if(it){it.over[cur]=0;openId=it.id}
-      else{it={id:uid(),kind:kind,name:nm,usual:0,repeat:false,start:cur,over:{}};state.items.push(it);openId=it.id}}
+      else{it={id:uid(),kind:kind,name:nm,usual:0,repeat:false,start:cur,over:{}};if(kind==='spend'){it.dates={};it.dates[cur]=spDefaultDate(cur)}state.items.push(it);openId=it.id}}
     logAdd(openId,kind,nm,cur);
     save();renderNotice();renderSections();focusSoon('[data-field="name"][data-id="'+openId+'"],[data-field="lname"][data-id="'+openId+'"]');
     if(act==='addnamed')focusSoon('[data-field="amt"][data-id="'+openId+'"]');
     refresh();
   }
+  else if(act==='spcal'){openSpendCal(b)}
+  else if(act==='whatsnew'){showWhatsNew(null)}
   else if(act==='rmcancel'){confirmAct=null;renderSections()}
   else if(act==='remove'&&findItem(id)&&confirmAct==='rm'+id&&b.getAttribute('data-mode')==='from'){
     var ei=findItem(id),endM=add(cur,-1),hist=Object.keys(ei.over).some(function(k){return k<=endM&&num(ei.over[k])>0})||(ei.repeat&&ei.usual>0&&(!ei.start||ei.start<=endM));
@@ -663,6 +696,7 @@ document.addEventListener('change',function(ev){
   if(e.id==='set-gid'){var v=e.value.trim();try{localStorage.setItem('mbm.gclient',v)}catch(x){}gTc=null;renderAll();return}
   if(!f||f==='amt')return;
   if(f==='clpaid'){var cc=CLd().filter(function(x){return x.id===id})[0];if(cc){if(e.checked){clCollect(cc,cur);trackOnce('collectible-marked-paid')}else clUncollect(cc,cur);state.sample=false;save();renderSections();refresh()}return}
+  if(f==='sdate'){var si=findItem(id);if(si)spDateEdit(si,e.value);return}
   var it=findItem(id),l=findLoan(id);
   if(it){
     if(f==='name'){var oldN=it.name;it.name=e.value.trim();logRename(it.id,it.kind,cur,oldN,it.name,itemVal(it,cur))}

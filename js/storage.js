@@ -63,7 +63,7 @@ function tsNum(v){var n=Number(v);return (isFinite(n)&&n>=1e12)?Math.min(n,8.64e
 function num(v){if(typeof v==='number')return isFinite(v)?amtClamp(v):0;if(amtBadChars(v))return 0;var n=parseAmt(v);return n===null?0:n}
 
 /* ---------- sample data ---------- */
-function sample(){var r=sampleRaw();return sane(r)||r}
+function sample(){var r=sampleRaw();var dd={Groceries:'03',Transport:'07','Eating out':'12'};r.items.forEach(function(i){if(i.kind==='spend'&&dd[i.name]){i.dates={};i.dates[ymNow()]=ymNow()+'-'+dd[i.name]}});return sane(r)||r}
 function sampleRaw(){
   var now=ymNow(), prev=add(now,-1), prev2=add(now,-2);
   function it(kind,name,usual,repeat,start,over){var pd={};if(kind==='bill')pd[now]=true;return {id:uid(),kind:kind,name:name,usual:usual,repeat:repeat,start:start,over:over||{},paid:pd}}
@@ -91,11 +91,13 @@ function blank(){return {v:1,paidMig:true,billsFrom:ymNow(),currency:'₱',carry
 
 /* ---------- state ---------- */
 var state=null, cur=ymNow(), openId=null, showSettings=false, confirmAct=null, statusText='Saved on this device';
+/* v9.42: a spending item can have one purchase date per month (dates[YYYY-MM] = YYYY-MM-DD). Items saved before this version have none. */
+function cleanDates(d){var o={};if(d&&typeof d==='object'&&!Array.isArray(d)){Object.keys(d).slice(0,600).forEach(function(k){var v=d[k];if(validYM(k)&&isoValid(v)&&v.slice(0,7)===k)o[k]=v})}return o}
 function sane(s){
   if(!s||typeof s!=='object'||!Array.isArray(s.items)||!Array.isArray(s.loans))return null;
   s.items=s.items.filter(function(i){return i&&typeof i==='object'}).map(function(i){
     return {id:cid(i.id),kind:['income','bill','spend','saving','card'].indexOf(i.kind)>=0?i.kind:'spend',name:String(i.name||''),
-      usual:num(i.usual),repeat:!!i.repeat,start:validYM(i.start)?i.start:null,end:validYM(i.end)?i.end:null,over:(i.over&&typeof i.over==='object')?i.over:{},due:Math.max(0,Math.min(31,Math.round(num(i.due))||0)),paid:(i.paid&&typeof i.paid==='object')?i.paid:{},ts:tsNum(i.ts)}});
+      usual:num(i.usual),repeat:!!i.repeat,start:validYM(i.start)?i.start:null,end:validYM(i.end)?i.end:null,over:(i.over&&typeof i.over==='object')?i.over:{},due:Math.max(0,Math.min(31,Math.round(num(i.due))||0)),paid:(i.paid&&typeof i.paid==='object')?i.paid:{},ts:tsNum(i.ts),dates:cleanDates(i.dates)}});
   s.loans=s.loans.filter(function(l){return l&&typeof l==='object'}).map(function(l){
     return {id:cid(l.id),name:String(l.name||''),pay:num(l.pay),term:Math.max(1,Math.round(num(l.term))||1),first:validYM(l.first)?l.first:ymNow(),due:Math.max(0,Math.min(31,Math.round(num(l.due))||0)),paid:(l.paid&&typeof l.paid==='object')?l.paid:{},ts:tsNum(l.ts)}});
   /* items saved before v9.28 have no change date: borrow the newest entry from the activity log */
@@ -160,5 +162,5 @@ window.addEventListener('storage',function(ev){
   staleTab=true;renderNotice();
 });
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flushSave()});
-function setStatus(t){statusText=t;var f=document.getElementById('foot');if(f)f.textContent=t+' · Your budget stays private to you. · version 9.41'}
+function setStatus(t){statusText=t;var f=document.getElementById('foot');if(f)f.textContent=t+' · Your budget stays private to you. · version 9.43'}
 
