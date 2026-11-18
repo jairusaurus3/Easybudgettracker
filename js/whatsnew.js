@@ -3,8 +3,14 @@
    Shows once after an update. The last version the person has seen is kept in localStorage under 'ebt.seen-ver' (a few bytes, this device only).
    To add notes for a new release: add an entry at the TOP of WN_NOTES and raise APP_VER. People who skipped versions see every entry newer than the one they last saw. */
 'use strict';
-var APP_VER='9.43';
+var APP_VER='9.44';
 var WN_NOTES=[
+  {v:'9.44',title:'A fresh look',items:[
+    'A cleaner Inter font, plus cards that float with a soft shadow.',
+    'Each category card is outlined in its own color.',
+    'Buttons spring when you tap them.',
+    'A new floating tab bar with a highlight that slides to the page you are on.'
+  ]},
   {v:'9.43',title:'Spending calendar',items:[
     'New calendar button in the Spending card. It shows each day of the month with the total spent, and tapping a day lists its items.',
     'Every spending item now has a date. It starts as today, and you can change it to a past day. A date in another month moves the item to that month.',
