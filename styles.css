@@ -817,7 +817,7 @@ svg.i{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stro
 .top .brand{display:flex;align-items:center}
 .top{gap:10px}
 .top .nav{order:2;flex:1 0 100%;justify-content:center}
-@media (max-width:767px){.tools{display:contents}.top .brand{flex:1 1 auto;order:0}#curWrap{order:1;margin-left:auto}#setBtn{order:1;margin-left:0}.tools>.tbtn:not(#setBtn):not(#curWrap){order:3}.tools>.tbtn:not(#setBtn):not(#curWrap):not([hidden]){flex:1 1 auto}}
+@media (max-width:767px){.tools{display:contents}.top .brand{flex:1 1 auto;order:0}#curWrap{order:1;margin-left:auto}#setBtn{order:1;margin-left:auto}.tools>.tbtn:not(#setBtn):not(#curWrap){order:3}.tools>.tbtn:not(#setBtn):not(#curWrap):not([hidden]){flex:1 1 auto}}
 .tbtn.avatar{width:38px;height:38px;padding:0;border-radius:50%;display:grid;place-items:center}
 .tbtn.avatar svg{width:20px;height:20px}
 .side-brand{display:flex;align-items:center;gap:10px;font-family:var(--font-display);font-weight:700;font-size:1.1rem;line-height:1.2;padding:4px 10px 22px;letter-spacing:-.01em;color:var(--nav-ink)}
@@ -1276,4 +1276,10 @@ body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
   .side-nav a,.side-nav button{transition:color .2s,background-color .2s,transform .3s var(--spring)}
   .side-nav a:hover,.side-nav button:hover{transform:translateX(3px)}
   .side-nav a:active,.side-nav button:active{transform:scale(.97)}
+}
+
+/* v9.44.5: comfortable tap targets on touch screens (44px minimum) */
+@media (pointer:coarse){
+  .ibtn,.gBtn,.setBtn,.curbtn,.tbtn,.paybtn,.foldbtn,.sortsel,.sortdir,.chip,button.phbtn{min-height:44px;min-width:44px;box-sizing:border-box}
+  input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=color]):not([type=hidden]),select{min-height:44px;box-sizing:border-box}
 }

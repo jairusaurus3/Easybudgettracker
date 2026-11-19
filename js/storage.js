@@ -40,6 +40,8 @@ var THEME_COLORS=[['blue','Blue'],['green','Green'],['teal','Teal'],['purple','P
 function themeId(color,mode){return THEMES.filter(function(t){return t.color===color&&t.mode===mode})[0].id}
 function themeOf(id){return THEMES.filter(function(t){return t.id===id})[0]||THEMES[0]}
 function themeOk(id){return THEMES.some(function(t){return t.id===id})}
+/* default theme for new people: light black/white. Someone who already picked a theme keeps it (it is also remembered in localStorage). */
+function themeDefault(){var t=null;try{t=localStorage.getItem('ebt.theme')}catch(e){}return themeOk(t)?t:'white'}
 var CURRENCIES=['$','₱','€','£','¥','₹','₩','A$','C$','S$','R$','Rp','฿','kr','CHF'];
 var MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 var FULL=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -162,5 +164,5 @@ window.addEventListener('storage',function(ev){
   staleTab=true;renderNotice();
 });
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')flushSave()});
-function setStatus(t){statusText=t;var f=document.getElementById('foot');if(f)f.textContent=t+' · Your budget stays private to you. · version 9.44.2'}
+function setStatus(t){statusText=t;var f=document.getElementById('foot');if(f)f.textContent=t+' · Your budget stays private to you. · version 9.44.5'}
 

@@ -10,7 +10,7 @@ document.addEventListener('click',function(ev){
   if(t.closest('[data-scroll]')){window.scrollTo(0,0)}
   var d=t.closest('[data-dark]');
   if(d){
-    var ct=themeOf(themeOk(state.theme)?state.theme:'blue-dark'),tid=themeId(ct.color,ct.mode==='dark'?'light':'dark');
+    var ct=themeOf(themeOk(state.theme)?state.theme:themeDefault()),tid=themeId(ct.color,ct.mode==='dark'?'light':'dark');
     if(themeOk(tid)){state.theme=tid;applyTheme(tid);save();renderSettings();renderInsights();syncDark()}
     setMore(false);
   }
@@ -33,7 +33,7 @@ document.addEventListener('keydown',function(ev){
   }
 });
 function syncDark(){
-  var dark=themeOf(themeOk(state.theme)?state.theme:'blue-dark').mode==='dark';
+  var dark=themeOf(themeOk(state.theme)?state.theme:themeDefault()).mode==='dark';
   [].forEach.call(document.querySelectorAll('[data-dark] span'),function(s){s.textContent=dark?'Light mode':'Dark mode'});
 }
 

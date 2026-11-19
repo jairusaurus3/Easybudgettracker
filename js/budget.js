@@ -4,14 +4,14 @@
 /* ---------- render ---------- */
 var $=function(id){return document.getElementById(id)};
 function applyTheme(id){
-  if(!themeOk(id))id='blue-dark';
+  if(!themeOk(id))id=themeDefault();
   var t=THEMES.filter(function(x){return x.id===id})[0];
   document.documentElement.setAttribute('data-theme',id);
   try{localStorage.setItem('ebt.theme',id)}catch(e){}
   var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',t.bg);
 }
 function themeHTML(){
-  var cur=themeOf(themeOk(state.theme)?state.theme:'blue-dark');
+  var cur=themeOf(themeOk(state.theme)?state.theme:themeDefault());
   var colors=THEME_COLORS.map(function(c){
     var t=themeOf(themeId(c[0],cur.mode)),on=c[0]===cur.color;
     return '<button class="tbtn th'+(on?' on':'')+'" data-act="theme-color" data-color="'+c[0]+'" aria-pressed="'+on+'"><i class="dot" style="background:linear-gradient(135deg,'+t.bg+' 50%,'+t.ac+' 50%)"></i>'+c[1]+'</button>';
@@ -495,6 +495,7 @@ function renderSettings(){
   var X='<svg viewBox="0 0 24 24" aria-hidden="true" class="i"><path d="M6 6l12 12M18 6L6 18"/></svg>';
   el.innerHTML='<div class="set-card" role="dialog" aria-modal="true" aria-labelledby="setTitle"><div class="set-head"><h2 id="setTitle">Settings</h2><button type="button" class="set-x" data-act="settings" aria-label="Close settings">'+X+'</button></div><div class="set-body">'+
     '<div class="set-sec"><h3 class="set-h">Google Drive</h3>'+googleSettingsHTML()+'</div>'+
+    '<div class="set-sec"><h3 class="set-h">Currency</h3><div class="srow"><label class="status" for="curSel">Show amounts in</label><select id="curSel" class="tbtn" aria-label="Currency"></select></div></div>'+
     '<div class="set-sec"><h3 class="set-h">Theme</h3>'+themeHTML()+'</div>'+
     '<div class="set-sec"><h3 class="set-h">Budget options</h3><div class="sgrid">'+
     '<label>Remind me before a bill, card or collectible is due (days)<input class="num" id="set-remind" inputmode="numeric" value="'+remindDays()+'"></label>'+
@@ -512,10 +513,11 @@ function renderSettings(){
     '<div class="status">Import links the rows in your file to your categories, and nothing leaves your device.</div></div>'+
     '<div class="status">Your budget saves automatically. A backup file lets you move it to another device.</div></div>'+
     '<div class="set-foot"><button type="button" class="tbtn primary" data-act="settings">Done</button></div></div>';
+  renderCur();
   var nb=el.querySelector('.set-body');if(nb)nb.scrollTop=keepTop;
   if(keepSel){var kn=el.querySelector(keepSel);if(kn&&kn!==document.activeElement)try{kn.focus({preventScroll:true})}catch(x){}}
 }
-function renderAll(){applyTheme(state.theme||lsGet('ebt.theme')||'blue-dark');renderHeader();renderCur();if(typeof spCalRefresh==='function')spCalRefresh();renderNotice();renderDue();renderHero();renderInsights();renderStrip();renderKpis();renderRecent();renderSections();updateLimits();renderSettings();renderPages();syncDark();setStatus(statusText)}
+function renderAll(){applyTheme(state.theme||themeDefault());renderHeader();renderCur();if(typeof spCalRefresh==='function')spCalRefresh();renderNotice();renderDue();renderHero();renderInsights();renderStrip();renderKpis();renderRecent();renderSections();updateLimits();renderSettings();renderPages();syncDark();setStatus(statusText)}
 
 /* ---------- actions ---------- */
 function findItem(id){return state.items.filter(function(i){return i.id===id})[0]}
@@ -590,7 +592,7 @@ document.addEventListener('click',function(ev){
   else if(act==='sortdir'){var sp=sortPref(kind);sp.dir=sp.dir==='asc'?'desc':'asc';setSortPref(kind,sp);renderSections();focusKeep('[data-act="sortdir"][data-kind="'+kind+'"]')}
   else if(act==='fold'){state.collapsed=state.collapsed||{};if(state.collapsed[kind])delete state.collapsed[kind];else state.collapsed[kind]=true;save();renderSections();focusSoon('[data-act="fold"][data-kind="'+kind+'"]')}
   else if(act==='foldall'){var every=KINDS.every(function(K){return state.collapsed&&state.collapsed[K.k]});state.collapsed={};if(!every)KINDS.forEach(function(K){state.collapsed[K.k]=true});save();renderSections()}
-  else if(act==='theme-color'||act==='theme-mode'){var ct=themeOf(themeOk(state.theme)?state.theme:'blue-dark');var tid=themeId(act==='theme-color'?b.getAttribute('data-color'):ct.color,act==='theme-mode'?b.getAttribute('data-mode'):ct.mode);if(themeOk(tid)){state.theme=tid;applyTheme(tid);save();renderSettings();renderInsights()}}
+  else if(act==='theme-color'||act==='theme-mode'){var ct=themeOf(themeOk(state.theme)?state.theme:themeDefault());var tid=themeId(act==='theme-color'?b.getAttribute('data-color'):ct.color,act==='theme-mode'?b.getAttribute('data-mode'):ct.mode);if(themeOk(tid)){state.theme=tid;applyTheme(tid);save();renderSettings();renderInsights()}}
   else if(act==='export'){doExport()}
   else if(act==='exporttext'){exportText()}
   else if(act==='pasteopen'){pasteOpen()}
