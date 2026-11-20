@@ -1,0 +1,5 @@
+# Easy Budget Tracker ads.txt
+# After AdSense approves the site, replace this file's contents with the line below, using YOUR publisher ID
+# (the digits after "ca-pub-"). Keep the "pub-" prefix. AdSense shows the exact line under Sites > ads.txt.
+#
+#   google.com, pub-1234567890123456, DIRECT, f08c47fec0942fa0

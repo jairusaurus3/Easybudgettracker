@@ -3,7 +3,7 @@
 Month-by-month budgeting made easy. Plan your income, bills, spending and savings for each month, keep tabs on groceries and collectibles, get due-date reminders for bills, credit cards and loans, and save everything to your own Google Drive.
 
 **Live app:** [ezbudgettracker.app](https://ezbudgettracker.app)
-**Current version:** 9.44.5
+**Current version:** 9.45
 
 ## Features
 
