@@ -7,7 +7,7 @@
    3. Put your publisher ID in ads.txt (see the comments in that file). */
 (function () {
   'use strict';
-  var PUB = '';
+  var PUB = 'ca-pub-2748215168485952';
   var SLOT = '';
   if (!/^ca-pub-\d{10,20}$/.test(PUB)) return;
   if (location.pathname.indexOf('/guides/') < 0) return;
